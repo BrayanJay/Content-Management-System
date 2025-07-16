@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ProductDescription from "../../../components/ProductDescription";
+import FileTable from "../../../components/FileTable";
 
 function MortgagePageContents() {
     
@@ -24,7 +25,7 @@ function MortgagePageContents() {
     formData.append("file_directory", "media/products"); // Custom File Path
   
     try {
-      const response = await axios.post("http://localhost:3000/data/upload", formData, {
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/data/upload`, formData, {
         withCredentials: true,
         headers: {
           "Content-Type": "multipart/form-data",
@@ -45,8 +46,8 @@ function MortgagePageContents() {
   const navigate = useNavigate()
   const fetchUser = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/auth/mortgagepagecontents', {
-      withCredentials: true,
+      await axios.get(`${import.meta.env.VITE_API_BASE_URL}/auth/mortgagepagecontents`, {
+        withCredentials: true,
       })
     } catch(err){
       navigate('/login')
@@ -106,7 +107,9 @@ function MortgagePageContents() {
         </form>
 
         <div>
-          <ProductDescription table_name={table_name} tokenUrl="http://localhost:3000/auth/mortgagepagecontents"/>
+          <ProductDescription table_name={table_name} tokenUrl={`${import.meta.env.VITE_API_BASE_URL}/auth/mortgagepagecontents`}/>
+          <FileTable fileDirectory="products/mortgage/kfd" category="Key Fact Documents"/>
+          <FileTable fileDirectory="products/mortgage/tariff" category="Charges and Tariff"/>
         </div>
 
       </div>

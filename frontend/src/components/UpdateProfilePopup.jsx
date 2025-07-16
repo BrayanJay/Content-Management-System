@@ -16,7 +16,7 @@ function UpdateProfilePopup ({ isOpen, onClose, initialLang, initialProfile_name
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(tokenUrl, {
+        await axios.get(tokenUrl, {
           withCredentials: true 
         });
       } catch (err) {
@@ -161,6 +161,7 @@ function UpdateProfilePopup ({ isOpen, onClose, initialLang, initialProfile_name
               {loading ? "Updating..." : "Save"}
             </button>
           </div>
+          
         </form>
       </div>
     </div>

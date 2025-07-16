@@ -15,6 +15,9 @@ const verifySessionToken = async (req, res, next) => {
             return res.status(401).json({ message: 'Unauthorized: Invalid session token' })
         }
 
+        // ✅ Attach userId to request object
+        req.userId = req.session.userId;
+
         next()
     } catch (err) {
         return res.status(500).json({ message: "Server error" })

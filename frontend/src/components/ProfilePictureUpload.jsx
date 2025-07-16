@@ -64,7 +64,7 @@ const ProfilePictureUpload = ({tokenUrl, id}) => {
       const navigate = useNavigate()
       const fetchUser = async () => {
         try {
-          const response = await axios.get(tokenUrl, {
+          await axios.get(tokenUrl, {
             withCredentials: true
           })
         } catch(err){

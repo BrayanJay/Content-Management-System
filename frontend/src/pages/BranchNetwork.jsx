@@ -37,21 +37,15 @@ const BranchNetwork = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const tokenUrl = "http://localhost:3000/auth/branchdetails";
+  const tokenUrl = `${import.meta.env.VITE_API_BASE_URL}/auth/branchdetails`;
   const navigate = useNavigate();
 
   // Fetch user authentication
   const fetchUser = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(tokenUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      await axios.get(tokenUrl, {
+        withCredentials: true,
       });
-      if (response.status !== 201) {
-        navigate("/login");
-      }
     } catch (err) {
       navigate("/login");
       console.log(err);
@@ -62,7 +56,7 @@ const BranchNetwork = () => {
     const fetchBranches = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3000/data/branches/getBranchDetails/en"
+          `${import.meta.env.VITE_API_BASE_URL}/branch/branches/getBranchDetails/en`
         );
         setBranches(response.data);
         setFilteredBranches(response.data);
@@ -81,7 +75,7 @@ const BranchNetwork = () => {
       if (selectedBranch) {
         try {
           const response = await axios.get(
-            `http://localhost:3000/data/branches/getBranchById/${selectedBranch.branch_id}/${selectedLang}`
+            `${import.meta.env.VITE_API_BASE_URL}/branch/branches/getBranchById/${selectedBranch.branch_id}/${selectedLang}`
           );
           setBranchDetails(response.data);
         } catch (error) {
@@ -127,44 +121,58 @@ const BranchNetwork = () => {
 
   //New Branch
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!branchNameEn || !branchNameSi || !branchNameTa || !regionEn || !regionSi || !regionTa || !addressEn || !addressSi || !addressTa) {
-    setError("All fields in all languages are required.");
-    return;
-  }
+    if (!branchNameEn || !branchNameSi || !branchNameTa || !regionEn || !regionSi || !regionTa || !addressEn || !addressSi || !addressTa || !longitude || !latitude || !contact) {
+      setError("All fields in all languages, coordinates, and contact are required.");
+      return;
+    }
 
-  setLoading(true);
-  setError("");
+    setLoading(true);
+    setError("");
 
-  try {
-    const token = localStorage.getItem("token");
-    const res = await axios.post(`http://localhost:3000/data/addBranch`, 
-      { 
-        branch_details: [
-          { lang: "en", branch_name: branchNameEn, region_name: regionEn, address: addressEn },
-          { lang: "si", branch_name: branchNameSi, region_name: regionSi, address: addressSi },
-          { lang: "ta", branch_name: branchNameTa, region_name: regionTa, address: addressTa }
-        ]
-      }, 
-      { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
-    );
+    try {
+      // 1. Add branch details (returns branch_id)
+      const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/branch/addBranch`, 
+        { 
+          branch_details: [
+            { lang: "en", branch_name: branchNameEn, region: regionEn, address: addressEn },
+            { lang: "si", branch_name: branchNameSi, region: regionSi, address: addressSi },
+            { lang: "ta", branch_name: branchNameTa, region: regionTa, address: addressTa }
+          ]
+        }, 
+        { withCredentials: true, headers: { "Content-Type": "application/json" } }
+      );
 
-    console.log("Branch Added:", res.data);
-    setBranchNameEn(""); setBranchNameSi(""); setBranchNameTa("");
-    setRegionEn(""); setRegionSi(""); setRegionTa("");
-    setAddressEn(""); setAddressSi(""); setAddressTa("");
+      const branch_id = res.data.branch_id;
 
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    setTimeout(() => window.location.reload(), 500);
+      // 2. Add coordinates
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/branch/addBranchCoordinates`, 
+        { branch_id, longitude, latitude },
+        { withCredentials: true, headers: { "Content-Type": "application/json" } }
+      );
 
-  } catch (err) {
-    console.error("Error adding branch:", err);
-    setError(err.response?.data?.message || "Failed to add branch");
-  } finally {
-    setLoading(false);
-  }
-};
+      // 3. Add contact
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/branch/addBranchContact`, 
+        { branch_id, contact_number: contact },
+        { withCredentials: true, headers: { "Content-Type": "application/json" } }
+      );
+
+      setBranchNameEn(""); setBranchNameSi(""); setBranchNameTa("");
+      setRegionEn(""); setRegionSi(""); setRegionTa("");
+      setAddressEn(""); setAddressSi(""); setAddressTa("");
+      setLongitude(""); setLatitude(""); setContact("");
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      setTimeout(() => window.location.reload(), 500);
+
+    } catch (err) {
+      console.error("Error adding branch:", err);
+      setError(err.response?.data?.message || "Failed to add branch");
+    } finally {
+      setLoading(false);
+    }
+  };
 
 const handleReset = async (e) => {
   e.preventDefault();
@@ -323,7 +331,7 @@ const handleReset = async (e) => {
         {error && <p className="text-red-500">{error}</p>}
   
         <form onSubmit={handleSubmit}>
-        <h2 className="text-base font-semibold text-blue-800 pb-1">English</h2>
+        <h2 className="text-base font-semibold text-blue-800 pb-1">In English</h2>
           
           <div className="mb-4">
             <label className="block text-slate-700">Branch Name (EN)</label>
@@ -358,7 +366,7 @@ const handleReset = async (e) => {
             />
           </div>
 
-          <h2 className="text-base font-semibold text-blue-800 pb-1">Sinhala</h2>
+          <h2 className="text-base font-semibold text-blue-800 pb-1">In Sinhala</h2>
 
           <div className="mb-4">
             <label className="block text-slate-700">Branch Name (SI)</label>
@@ -393,7 +401,7 @@ const handleReset = async (e) => {
             />
           </div>
 
-          <h2 className="text-base font-semibold text-blue-800 pb-1">Tamil</h2>
+          <h2 className="text-base font-semibold text-blue-800 pb-1">In Tamil</h2>
 
           <div className="mb-4">
             <label className="block text-slate-700">Branch Name (TA)</label>
@@ -442,7 +450,7 @@ const handleReset = async (e) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-slate-700">Lotitude</label>
+            <label className="block text-slate-700">Latitude</label>
             <input
               type="text"
               value={latitude}

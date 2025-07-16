@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import PropTypes from "prop-types";
+import UploadCard from "./UploadCard";
 
 function UpdateBranchPopup ({ isOpen, onClose, initialLang, initialBranchName, initialRegion, initialAddress, initialLongitude, initialLatitude, initialContact, id,  tokenUrl }) {
   const [branchName, setBranchName] = useState(initialBranchName || "");
@@ -19,12 +20,7 @@ function UpdateBranchPopup ({ isOpen, onClose, initialLang, initialBranchName, i
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem("token");
-        //console.log("Token: ", token);
-        const response = await axios.get(tokenUrl, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (response.status !== 201) navigate("/login");
+        await axios.get(tokenUrl, { withCredentials: true });
       } catch (err) {
         navigate("/login");
         console.log(err);
@@ -46,12 +42,10 @@ function UpdateBranchPopup ({ isOpen, onClose, initialLang, initialBranchName, i
     setError("");
 
     try {
-      const token = localStorage.getItem("token");
-      const res = await axios.put(`http://localhost:3000/data/updateBranch/${id}`, 
+      await axios.put(`${import.meta.env.VITE_API_BASE_URL}/branch/updateBranch/${id}`, 
         { branch_name: branchName, region, address, longitude, latitude, contact, lang: initialLang }, 
-        { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
+        { withCredentials: true, headers: { "Content-Type": "application/json" } }
       );
-      console.log(res)
       setBranchName("");
       setRegion("");
       setAddress("");
@@ -80,10 +74,22 @@ function UpdateBranchPopup ({ isOpen, onClose, initialLang, initialBranchName, i
           
           {error && <p className="text-red-500">{error}</p>}
   
+          <div className="flex flex-col gap-3 w-full py-10">
+            <h1 className="text-blue-800 font-semibold text-xl">Popup Media</h1>
+            {/* <PopupToggle tokenUrl={tokenUrl}/> */}
+            <UploadCard
+              label="Branch Image"
+              uploadUrl={`${import.meta.env.VITE_API_BASE_URL}/fileUpload/upload/image`}
+              acceptedTypes="image/png,image/webp"
+              maxSizeMB={1}
+              customFileName={`${initialBranchName.toLowerCase().replace(/\s+/g, '').replace(/_+/g, '')}.webp`}
+              customDirectory="media/branches"
+              onUploadSuccess={(data) => console.log("Uploaded!", data)}
+            />
+          </div>
+
           <form onSubmit={handleSubmit}>
-  
-  
-  
+
             <div className="mb-4">
               <label className="block text-slate-700">Branch Name</label>
               <input

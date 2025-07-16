@@ -73,7 +73,7 @@ router.post("/upload", verifySessionToken, upload.single("file"), async (req, re
 });
 
 // GET all files in a directory
-router.get("/getFiles", verifySessionToken, async (req, res) => {
+router.get("/getFiles", async (req, res) => {
   try {
     const folder = req.query.folder || "media/attachments";
     const absolutePath = path.resolve(folder);
@@ -371,6 +371,7 @@ router.get('/read/profile/:id/:lang', async (req, res) => {
     if (db) db.release(); // ✅ Ensure connection is released
   }
 });
+
 
 
 

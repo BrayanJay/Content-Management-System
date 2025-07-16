@@ -1,47 +1,46 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Test from "../../components/Test";
+// import { useNavigate } from "react-router-dom";
 
 function CareersPageContents() {
     
-  const [files, setFiles] = useState({});
+const [files, setFiles] = useState({});
 
-  const handleFile = (e, num) => {
-    setFiles({ ...files, [num]: e.target.files[0] });
-  };
+const handleFile = (e, num) => {
+ setFiles({ ...files, [num]: e.target.files[0] });
+};
 
-  const handleUpload = async (num) => {
-    if (!files[num]) {
-      alert(`No file selected for Slide 0${num}`);
-      return;
-    }
+const handleUpload = async (num) => {
+   if (!files[num]) {
+     alert(`No file selected for Slide 0${num}`);
+     return;
+   }
   
-    const formData = new FormData();
-    formData.append("image", files[num]);
-    formData.append("filename", `bannerAbout.webp`);
-    formData.append("file_directory", "media/careersPage"); // Custom File Path
-  
-    try {
-      const response = await axios.post("http://localhost:3000/data/upload", formData, {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-  
-      alert(response.data.message);
-    } catch (error) {
-      alert(`Upload failed: ${error.response?.data?.message || error.message}`);
-    }
-  };
+   const formData = new FormData();
+   formData.append("image", files[num]);
+   formData.append("filename", `bannerAbout.webp`);
+   formData.append("file_directory", "media/careersPage"); // Custom File Path
+
+   try {
+     const response = await axios.post("http://localhost:3000/data/upload", formData, {
+       withCredentials: true,
+       headers: {
+         "Content-Type": "multipart/form-data",
+       },
+     });
+
+     alert(response.data.message);
+   } catch (error) {
+     alert(`Upload failed: ${error.response?.data?.message || error.message}`);
+   }
+ };
 
   const handleClear = (num) => {
     setFiles({ ...files, [num]: null });
     document.getElementById(`slide${num}`).value = ""; // Reset input field
   };
 
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
   const fetchUser = async () => {
     try {
       await axios.get('http://localhost:3000/auth/careerspagecontents', {
@@ -101,8 +100,6 @@ function CareersPageContents() {
             </tbody>
           </table>
         </form>
-
-        <Test fileName="bannerCareer.webp" file_directory="/careersPage" />
       </div>
     </div>
   );

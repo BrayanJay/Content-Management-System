@@ -20,8 +20,7 @@ import ForexPageContents from './pages/sub_pages/products_pages/ForexPageContent
 import LuckewalletPageContents from './pages/sub_pages/products_pages/LuckewalletPageContents'
 import BranchNetwork from './pages/BranchNetwork'
 import Documents from './pages/Documents'
-
-
+import AddProfile from './components/profiles/AddProfile'
 
 function App() {
 
@@ -57,8 +56,9 @@ function App() {
           <Route path='/mortgagePage' element={<MortgagePageContents/>}/>
           <Route path='/forexPage' element={<ForexPageContents/>}/>
           <Route path='/luckewalletPage' element={<LuckewalletPageContents/>}/>
-
           
+          {/*Profiles */}
+          <Route path='/profiles/add' element={<AddProfile/>}/>
           </Route>
         </Routes>
         <Footer/>

@@ -3,25 +3,21 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 library.add(fas, fab, far);
 
 const SideBar = () => {
 
-    const navigate = useNavigate()
-
-    const handleLogOut = async (e) => {
-        e.preventDefault()
-        try {
-            console.log(localStorage.getItem("token"))
-            localStorage.removeItem("token")
-            navigate('/')
-            window.location.reload();
-            
-            
-        } catch(err) {
-            console.log(err.message)
+    const handleLogOut = async () => {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/logout`, {
+            method: 'POST',
+            credentials: 'include'
+        });
+        const data = await response.json();
+        if (data.message === 'Logged out successfully') {
+            // Redirect to login page or update UI
+            window.location.href = '/login';
         }
     }
     

@@ -143,7 +143,7 @@ router.get("/branches/getBranchById/:branch_id/:lang", async (req, res) => {
 
 //Update Branch Details
 router.put("/updateBranch/:id", async (req, res) => {
-  const { id } = req.params; //if id not worked try branch_id
+  const { id } = req.params;
   const { branch_name, region, address, lang, longitude, latitude, contact } = req.body;
 
   if (!branch_name || !region || !address || !lang || !longitude || !latitude || !contact) {
@@ -153,31 +153,29 @@ router.put("/updateBranch/:id", async (req, res) => {
   let db;
   try {
     db = await connectToDatabase();
-    const [branchDetails] = await db.query("UPDATE branch_details SET branch_name = ?, region_name = ?, address = ? WHERE branch_id = ? AND lang = ?", [branch_name, region, address, id, lang]);
-    const [coordinates] = await db.query("UPDATE branch_coordinates SET longitude = ?, latitude = ? WHERE branch_id = ?", [longitude, latitude, id]);
-    const [contacts] = await db.query("UPDATE branch_contacts SET contact_number = ? WHERE branch_id = ?", [contact, id]);
-    
-    
-    if (branchDetails.length === 0) {
-      return res.status(404).json({ message: "No branches found for the selected language." });
-    }
+    await db.query("UPDATE branch_details SET branch_name = ?, region_name = ?, address = ? WHERE branch_id = ? AND lang = ?", [branch_name, region, address, id, lang]);
+    await db.query("UPDATE branch_coordinates SET longitude = ?, latitude = ? WHERE branch_id = ?", [longitude, latitude, id]);
+    await db.query("UPDATE branch_contacts SET contact_number = ? WHERE branch_id = ?", [contact, id]);
 
-    // Merge the data into a single object
+    // Fetch updated details
+    const [branchDetails] = await db.query("SELECT * FROM branch_details WHERE branch_id = ? AND lang = ?", [id, lang]);
+    const [coordinates] = await db.query("SELECT latitude, longitude FROM branch_coordinates WHERE branch_id = ?", [id]);
+    const [contacts] = await db.query("SELECT contact_number, picture FROM branch_contacts WHERE branch_id = ?", [id]);
+
     const mergedData = {
-      ...branchDetails[0], // Extracting first element as branch_id is unique
-      latitude: coordinates[0]?.latitude || null,   // Extract first latitude
-      longitude: coordinates[0]?.longitude || null, // Extract first longitude
-      contact_number: contacts[0]?.contact_number || null, // Extract first contact
+      ...branchDetails[0],
+      latitude: coordinates[0]?.latitude || null,
+      longitude: coordinates[0]?.longitude || null,
+      contact_number: contacts[0]?.contact_number || null,
+      picture: contacts[0]?.picture || null
     };
 
     res.json(mergedData);
 
   } catch (e) {
-    console.error("Error fetching branch details:", e.message);
     res.status(500).json({ message: "Internal Server Error" });
-
   } finally {
-    if (db) await db.release(); // Ensure release is awaited
+    if (db && db.release) await db.release();
   }
 });
 
@@ -215,3 +213,47 @@ router.post("/addBranch", async (req, res) => {
     if (db) await db.release();
   }
 });
+
+// Add branch coordinates
+router.post("/addBranchCoordinates", async (req, res) => {
+  const { branch_id, longitude, latitude } = req.body;
+  if (!branch_id || !longitude || !latitude) {
+    return res.status(400).json({ message: "branch_id, longitude, and latitude are required" });
+  }
+  let db;
+  try {
+    db = await connectToDatabase();
+    await db.query(
+      "INSERT INTO branch_coordinates (branch_id, longitude, latitude) VALUES (?, ?, ?)",
+      [branch_id, longitude, latitude]
+    );
+    res.status(201).json({ message: "Coordinates added" });
+  } catch (e) {
+    res.status(500).json({ message: "Internal Server Error" });
+  } finally {
+    if (db && db.release) await db.release();
+  }
+});
+
+// Add branch contact
+router.post("/addBranchContact", async (req, res) => {
+  const { branch_id, contact_number } = req.body;
+  if (!branch_id || !contact_number) {
+    return res.status(400).json({ message: "branch_id and contact_number are required" });
+  }
+  let db;
+  try {
+    db = await connectToDatabase();
+    await db.query(
+      "INSERT INTO branch_contacts (branch_id, contact_number) VALUES (?, ?)",
+      [branch_id, contact_number]
+    );
+    res.status(201).json({ message: "Contact added" });
+  } catch (e) {
+    res.status(500).json({ message: "Internal Server Error" });
+  } finally {
+    if (db && db.release) await db.release();
+  }
+});
+
+export default router;

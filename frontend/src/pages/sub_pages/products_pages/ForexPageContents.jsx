@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ProductDescription from "../../../components/ProductDescription";
+import FileTable from "../../../components/FileTable";
 
 function ForexPageContents() {
     
@@ -24,7 +25,7 @@ function ForexPageContents() {
     formData.append("file_directory", "media/products"); // Custom File Path
   
     try {
-      const response = await axios.post("http://localhost:3000/data/upload", formData, {
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/data/upload`, formData, {
         withCredentials: true,
         headers: {
           "Content-Type": "multipart/form-data",
@@ -45,7 +46,7 @@ function ForexPageContents() {
   const navigate = useNavigate()
   const fetchUser = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/auth/forexpagecontents', {
+      await axios.get(`${import.meta.env.VITE_API_BASE_URL}/auth/forexpagecontents`, {
         withCredentials: true,
       })
     } catch(err){
@@ -104,7 +105,8 @@ function ForexPageContents() {
         </form>
         
         <div>
-          <ProductDescription table_name={table_name} tokenUrl="http://localhost:3000/auth/forexpagecontents"/>
+          <ProductDescription table_name={table_name} tokenUrl={`${import.meta.env.VITE_API_BASE_URL}/auth/forexpagecontents`}/>
+          <FileTable fileDirectory="products/forex" category="Key Fact Documents"/>
         </div>
 
       </div>

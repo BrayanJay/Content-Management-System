@@ -5,21 +5,15 @@ import FileTable from "../components/FileTable";
 
 
 const Documents = () => {
-    const tokenUrl = "http://localhost:3000/auth/documents";
+    const tokenUrl = `${import.meta.env.VITE_API_BASE_URL }/auth/documents`;
     const navigate = useNavigate();
 
     // Fetch user authentication
   const fetchUser = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(tokenUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      await axios.get(tokenUrl, {
+        withCredentials: true,
       });
-      if (response.status !== 201) {
-        navigate("/login");
-      }
     } catch (err) {
       navigate("/login");
       console.log(err);
@@ -40,13 +34,7 @@ const Documents = () => {
         <FileTable fileDirectory="customerInformation" category="Customer Information"/>
       </div>
       <div>
-        <FileTable fileDirectory="customerProtectionFramework" category="Customer Protection Framework"/>
-      </div>
-      <div>
         <FileTable fileDirectory="interiemFinancials" category="Interiem Financials"/>
-      </div>
-      <div>
-        <FileTable fileDirectory="luckewalletTutes" category="Luckewallet Tutes"/>
       </div>
       <div>
         <FileTable fileDirectory="otherRelatedDocs" category="Other Related Documents"/>

@@ -14,9 +14,7 @@ const FileTable = ({fileDirectory, category}) => {
 
   const fetchFiles = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`http://localhost:3000/data/getFiles?folder=media/attachments/${fileDirectory}`, {
-        headers: { Authorization: `Bearer ${token}` },
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/data/getFiles?folder=media/attachments/${fileDirectory}`, {
       });
       setFiles(response.data);
     } catch (err) {
@@ -28,9 +26,8 @@ const FileTable = ({fileDirectory, category}) => {
   const handleDelete = async (filePath) => {
     if (!window.confirm("Are you sure you want to delete this file?")) return;
     try {
-      const token = localStorage.getItem("token");
-      await axios.delete("http://localhost:3000/data/delete-file", {
-        headers: { Authorization: `Bearer ${token}` },
+      await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/data/delete-file`, {
+        withCredentials: true,
         data: { path: filePath },
       });
       fetchFiles();
@@ -54,14 +51,12 @@ const FileTable = ({fileDirectory, category}) => {
     formData.append("filename", file.name);
     formData.append("file_directory", `media/attachments/${fileDirectory}`);
 
-    const token = localStorage.getItem("token");
-
     axios
-      .post("http://localhost:3000/data/upload", formData, {
+      .post(`${import.meta.env.VITE_API_BASE_URL}/data/upload`, formData, {
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
+        withCredentials: true,
       })
       .then((res) => {
         alert(res.data.message);
@@ -91,18 +86,17 @@ const FileTable = ({fileDirectory, category}) => {
       return;
     }
 
-    try {
-      const token = localStorage.getItem("token");
+    try {;
       const formData = new FormData();
       formData.append("image", updateFile);
       formData.append("filename", fileToUpdate.fileName); // Keep the same filename
       formData.append("file_directory", fileToUpdate.path.substring(0, fileToUpdate.path.lastIndexOf('/')));
 
-      const response = await axios.post("http://localhost:3000/data/upload", formData, {
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/data/upload`, formData, {
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
+        withCredentials: true,
       });
 
       alert(response.data.message);
