@@ -45,7 +45,7 @@ router.post(
   "/upload/image",
   verifySessionToken,
   imageUpload.single("file"),
-  (req, res) => handleFileUpload(req, res, "media/images")
+  (req, res) => handleFileUpload(req, res, null) // Allow full control via client directory parameter
 );
 
 export default router;

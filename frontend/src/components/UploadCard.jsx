@@ -73,7 +73,12 @@ const UploadCard = ({
 
   const handleClear = () => {
         setFile(null);
-        document.getElementById("fileInput").value = ""; // Reset input field
+        setStatus(null);
+        // Reset the file input by finding it via ref or resetting the component
+        const fileInput = document.querySelector('input[type="file"]');
+        if (fileInput) {
+          fileInput.value = "";
+        }
     };
 
   return (

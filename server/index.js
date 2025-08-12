@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import 'dotenv/config'
 import authRouter from './routes/authRoutes.js'
 import commonRoutes from './routes/commonRoutes.js'
 import branchRoutes from './routes/branchRoutes.js'
@@ -9,6 +10,10 @@ import profileRoutes from './routes/profileRoutes.js'
 import uploadRoutes from './routes/uploadRoutes.js'
 import testRoutes from './routes/testRoutes.js'
 import session from 'express-session';
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const app = express()
 
@@ -45,8 +50,9 @@ app.use('/profile', profileRoutes)
 app.use('/fileUpload', uploadRoutes) // Assuming you have uploadRoutes defined
 app.use('/test', testRoutes)
 app.get('/', (req, res) => {
-    console.log("req.body")
+    res.json({ message: "AAF CMS API Server is running", status: "OK" });
 })
+app.use('/media', express.static(path.join(__dirname, 'media')));
 
 app.listen(3000, () => {
     console.log("Server is Running on port 3000")

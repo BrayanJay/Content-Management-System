@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { Trash2 } from "lucide-react";
+import UploadCard from "../UploadCard";
 
 function UpdateProfile ({ isOpen, onClose, id, initialName, initialType, initialDesignation, initialDescription, tokenUrl, lang }) {
   const [name, setName] = useState(initialName || "");
@@ -92,27 +93,9 @@ function UpdateProfile ({ isOpen, onClose, id, initialName, initialType, initial
 
   // Update description array
   const handleDescriptionChange = (index, value) => {
-    // Check if the value contains commas and split if it does
-    if (value.includes(',')) {
-      const splitValues = value.split(',').map(item => item.trim()).filter(item => item !== '');
-      const newDescription = [...description];
-      
-      // Replace the current item with the first split value
-      newDescription[index] = splitValues[0] || '';
-      
-      // Insert additional split values as new lines
-      if (splitValues.length > 1) {
-        for (let i = 1; i < splitValues.length; i++) {
-          newDescription.splice(index + i, 0, splitValues[i]);
-        }
-      }
-      
-      setDescription(newDescription);
-    } else {
-      const newDescription = [...description];
-      newDescription[index] = value;
-      setDescription(newDescription);
-    }
+    const newDescription = [...description];
+    newDescription[index] = value;
+    setDescription(newDescription);
   };
 
   // Remove a description field
@@ -124,13 +107,28 @@ function UpdateProfile ({ isOpen, onClose, id, initialName, initialType, initial
 
   if (!isOpen) return null; // Don't render if not open
 
-
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 h-auto">
       <div className="flex flex-col bg-white p-6 rounded-md shadow-lg w-3/4">
         <h2 className="text-lg text-blue-900 font-semibold mb-4">Edit Profile</h2>
         
         {error && <p className="text-red-500">{error}</p>}
+
+        <div className="mb-4">
+            <UploadCard
+            label={`Profile Picture`}
+            uploadUrl={`${import.meta.env.VITE_API_BASE_URL}/fileUpload/upload/image`}
+            acceptedTypes="image/webp"
+            maxSizeMB={2}
+            customFileName={`${id}.webp`}
+            customDirectory={`media/aboutPage/${initialType || type || 'profiles'}`}
+            onUploadSuccess={(data) => console.log(`Uploaded profile picture successfully!`, data)}
+            onUploadError={(error) => {
+              console.error(`Upload failed:`, error);
+              setError(`Image upload failed: ${error.message || 'Unknown error'}`);
+            }}
+          />
+        </div>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">

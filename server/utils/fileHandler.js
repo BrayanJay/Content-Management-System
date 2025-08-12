@@ -21,3 +21,20 @@ export function saveFile(directory, filename, buffer) {
   // Return relative path
   return path.relative(path.resolve(__dirname, ".."), filePath);
 }
+
+export function deleteFile(filePath) {
+  try {
+    const fullPath = path.resolve(__dirname, "..", filePath);
+    if (fs.existsSync(fullPath)) {
+      fs.unlinkSync(fullPath);
+      console.log(`File deleted successfully: ${fullPath}`);
+      return true;
+    } else {
+      console.log(`File not found: ${fullPath}`);
+      return false;
+    }
+  } catch (error) {
+    console.error(`Error deleting file: ${error.message}`);
+    return false;
+  }
+}
