@@ -92,14 +92,14 @@ const GetProfileDetails = () => {
 
   return (
 
-    <div className="flex flex-col">
+    <div className="flex flex-col space-y-2 p-4 sm:p-6">
       
-      <div className="flex flex-row justify-between items-center mb-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
       {/* Language Selection */}
-        <div className="relative w-full max-w-md py-4">
-          <span>Select Language</span>
+        <div className="w-full sm:w-auto min-w-48">
+          <label className="block text-sm sm:text-base font-medium text-gray-700 mb-2">Select Language</label>
           <select
-            className="w-full px-3 py-2 border rounded-md bg-white cursor-pointer justify-between flex items-center"
+            className="w-full px-3 py-2 sm:py-3 border border-gray-300 rounded-md bg-white text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             onChange={(e) => setSelectedLang(e.target.value)}
             value={selectedLang}
           >
@@ -109,8 +109,10 @@ const GetProfileDetails = () => {
           </select>
         </div>
 
-        <Link to="/profiles/add">
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">+ Add Profile</button>
+        <Link to="/profiles/add" className="w-full sm:w-auto">
+          <button className="w-full sm:w-auto bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-md hover:bg-blue-700 text-sm sm:text-base font-medium transition-colors">
+            + Add Profile
+          </button>
         </Link>
 
         </div>
@@ -122,7 +124,7 @@ const GetProfileDetails = () => {
                         <tr className="">
                             <th className="px-3 py-2 text-left min-w-24">Profile ID</th>
                             <th className="px-3 py-2 text-left min-w-32">Name</th>
-                            <th className="px-3 py-2 text-left">Designation</th>
+                            <th className="px-3 py-2 text-left min-w-32">Designation</th>
                             <th className="px-3 py-2 text-center">Description</th>
                             <th className="px-3 py-2 text-center">Actions</th>
                         </tr>
@@ -196,7 +198,7 @@ const GetProfileDetails = () => {
                         <tr className="">
                             <th className="px-3 py-2 text-left min-w-24">Profile ID</th>
                             <th className="px-3 py-2 text-left min-w-32">Name</th>
-                            <th className="px-3 py-2 text-left">Designation</th>
+                            <th className="px-3 py-2 text-left min-w-32">Designation</th>
                             <th className="px-3 py-2 text-center">Description</th>
                             <th className="px-3 py-2 text-center">Actions</th>
                         </tr>
