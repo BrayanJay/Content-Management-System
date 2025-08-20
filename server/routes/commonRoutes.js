@@ -11,8 +11,11 @@ const router = express.Router();
 // List of valid products
 const allowedProducts = ['gold_loan', 'fixed_deposits', 'mortgage', 'leasing', 'luckewallet', 'forex'];
 
-// Use memory storage, then move the file manually
-const upload = multer({ storage: multer.memoryStorage() });
+// Use memory storage with file size limits
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 } // 10 MB limit
+});
 
 // Upload Image API
 router.post("/upload", verifySessionToken, upload.single("file"), async (req, res) => {

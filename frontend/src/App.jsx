@@ -5,6 +5,9 @@ import Login from './pages/Login'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import Layout from './components/Layout'
+import ProtectedRoute from './components/ProtectedRoute'
+import Unauthorized from './pages/Unauthorized'
+import SecurityMonitor from './components/SecurityMonitor'
 import DashboardUpload from './pages/DashboardUpload'
 import LandingPageContents from './pages/sub_pages/LandingPageContents'
 import AboutPageContents from './pages/sub_pages/AboutPageContents'
@@ -21,49 +24,142 @@ import LuckewalletPageContents from './pages/sub_pages/products_pages/Luckewalle
 import BranchNetwork from './pages/BranchNetwork'
 import Documents from './pages/Documents'
 import AddProfile from './components/profiles/AddProfile'
+import UserManagement from './pages/admin/UserManagement'
+import SystemLogs from './pages/admin/SystemLogs'
+import { AuthProvider } from './contexts/AuthContext'
 
 function App() {
 
   return (
-    <BrowserRouter>
-      <div>
-        <Header/>
-        <Routes>
-          {/*Routes without Sidebar*/}
-          {/*<Route path='/register' element={<Register />}></Route>*/}
-          <Route path='/login' element={<Login />}></Route>
+    <AuthProvider>
+      <BrowserRouter>
+        <div className="min-h-screen bg-gray-50">
+          <Header/>
+          <SecurityMonitor />
+          <Routes>
+            {/*Routes without Sidebar*/}
+            <Route path='/login' element={<Login />}></Route>
+            <Route path='/unauthorized' element={<Unauthorized />}></Route>
 
+            {/*Routes with Sidebar - All require authentication*/}
+            <Route element={
+              <ProtectedRoute>
+                <Layout />
+              </ProtectedRoute>
+            }>
+              
+              {/* Dashboard/Upload - Contributors and above can upload */}
+              <Route path='/' element={
+                <ProtectedRoute requiredRole="contributor+">
+                  <DashboardUpload/>
+                </ProtectedRoute>
+              }/>
 
-          {/*Routes with Sidebar*/}
-          <Route element={<Layout />}>
-          {/*<Route path='/' element={<Home />}/>*/}
-          <Route path='/' element={<DashboardUpload/>}/>
-          <Route path='/branch-network' element={<BranchNetwork/>}/>
-          <Route path='/documents' element={<Documents/>}/>
+              {/* Branch Network - All authenticated users can view */}
+              <Route path='/branch-network' element={
+                <ProtectedRoute requiredPermission="branches:read">
+                  <BranchNetwork/>
+                </ProtectedRoute>
+              }/>
 
-          {/*Sub Pages */}
-          <Route path='/landingPage' element={<LandingPageContents/>}/>
-          <Route path='/aboutPage' element={<AboutPageContents/>}/>
-          <Route path='/productsPage' element={<ProductsPageContents/>}/>
-          <Route path='/investorRelationsPage' element={<InvestorRelationsPageContents/>}/>
-          <Route path='/contacts' element={<ContactPageContents/>}/>
-          <Route path='/careers' element={<CareersPageContents/>}/>
+              {/* Documents - All authenticated users can view */}
+              <Route path='/documents' element={
+                <ProtectedRoute requiredPermission="files:read">
+                  <Documents/>
+                </ProtectedRoute>
+              }/>
 
-          {/*Products Pages */}
-          <Route path='/goldLoanPage' element={<GoldLoanPageContents/>}/>
-          <Route path='/fixedDepositsPage' element={<FixedDepositsPageContents/>}/>
-          <Route path='/leasingPage' element={<LeasingPageContents/>}/>
-          <Route path='/mortgagePage' element={<MortgagePageContents/>}/>
-          <Route path='/forexPage' element={<ForexPageContents/>}/>
-          <Route path='/luckewalletPage' element={<LuckewalletPageContents/>}/>
-          
-          {/*Profiles */}
-          <Route path='/profiles/add' element={<AddProfile/>}/>
-          </Route>
-        </Routes>
-        <Footer/>
-      </div>
-    </BrowserRouter>
+              {/* Content Pages - Contributors and above can edit */}
+              <Route path='/landingPage' element={
+                <ProtectedRoute requiredPermission="content:read">
+                  <LandingPageContents/>
+                </ProtectedRoute>
+              }/>
+              <Route path='/aboutPage' element={
+                <ProtectedRoute requiredPermission="content:read">
+                  <AboutPageContents/>
+                </ProtectedRoute>
+              }/>
+              <Route path='/productsPage' element={
+                <ProtectedRoute requiredPermission="content:read">
+                  <ProductsPageContents/>
+                </ProtectedRoute>
+              }/>
+              <Route path='/investorRelationsPage' element={
+                <ProtectedRoute requiredPermission="content:read">
+                  <InvestorRelationsPageContents/>
+                </ProtectedRoute>
+              }/>
+              <Route path='/contacts' element={
+                <ProtectedRoute requiredPermission="content:read">
+                  <ContactPageContents/>
+                </ProtectedRoute>
+              }/>
+              <Route path='/careers' element={
+                <ProtectedRoute requiredPermission="content:read">
+                  <CareersPageContents/>
+                </ProtectedRoute>
+              }/>
+
+              {/* Product Pages */}
+              <Route path='/goldLoanPage' element={
+                <ProtectedRoute requiredPermission="products:read">
+                  <GoldLoanPageContents/>
+                </ProtectedRoute>
+              }/>
+              <Route path='/fixedDepositsPage' element={
+                <ProtectedRoute requiredPermission="products:read">
+                  <FixedDepositsPageContents/>
+                </ProtectedRoute>
+              }/>
+              <Route path='/leasingPage' element={
+                <ProtectedRoute requiredPermission="products:read">
+                  <LeasingPageContents/>
+                </ProtectedRoute>
+              }/>
+              <Route path='/mortgagePage' element={
+                <ProtectedRoute requiredPermission="products:read">
+                  <MortgagePageContents/>
+                </ProtectedRoute>
+              }/>
+              <Route path='/forexPage' element={
+                <ProtectedRoute requiredPermission="products:read">
+                  <ForexPageContents/>
+                </ProtectedRoute>
+              }/>
+              <Route path='/luckewalletPage' element={
+                <ProtectedRoute requiredPermission="products:read">
+                  <LuckewalletPageContents/>
+                </ProtectedRoute>
+              }/>
+              
+              {/* Profiles */}
+              <Route path='/profiles/add' element={
+                <ProtectedRoute requiredPermission="profiles:create">
+                  <AddProfile/>
+                </ProtectedRoute>
+              }/>
+
+              {/* Admin Routes - Admin only */}
+              <Route path='/users' element={
+                <ProtectedRoute requiredRole="admin">
+                  <UserManagement/>
+                </ProtectedRoute>
+              }/>
+
+              {/* System Logs - Admin only */}
+              <Route path='/logs' element={
+                <ProtectedRoute requiredRole="admin">
+                  <SystemLogs/>
+                </ProtectedRoute>
+              }/>
+
+            </Route>
+          </Routes>
+          <Footer/>
+        </div>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 

@@ -1,7 +1,7 @@
 import express from "express";
 import multer from "multer";
 import { handleFileUpload } from "../utils/uploadHandler.js";
-import verifySessionToken from "../middleware/authToken.js";
+import { requireAuth, requirePermission } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -36,14 +36,16 @@ const imageUpload = multer({
 
 router.post(
   "/upload/document",
-  verifySessionToken,
+  requireAuth,
+  requirePermission('files', 'upload'),
   documentUpload.single("file"),
   (req, res) => handleFileUpload(req, res, "media/documents")
 );
 
 router.post(
   "/upload/image",
-  verifySessionToken,
+  requireAuth,
+  requirePermission('files', 'upload'),
   imageUpload.single("file"),
   (req, res) => handleFileUpload(req, res, null) // Allow full control via client directory parameter
 );

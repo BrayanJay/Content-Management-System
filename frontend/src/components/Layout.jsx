@@ -1,18 +1,81 @@
 import { Outlet, useLocation } from "react-router-dom";
-import SideBar from "./SideBar";
+import { useState, useEffect } from "react";
+import RoleBasedSideBar from "./RoleBasedSideBar.jsx";
 
 const Layout = () => {
   const location = useLocation();
+  const [isMobile, setIsMobile] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Hide Sidebar for Login & Signup pages
   const hideSidebarRoutes = ["/login"];
   const shouldShowSidebar = !hideSidebarRoutes.includes(location.pathname);
 
+  // Handle responsive design
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Close sidebar when route changes on mobile
+  useEffect(() => {
+    if (isMobile) {
+      setSidebarOpen(false);
+    }
+  }, [location.pathname, isMobile]);
+
   return (
-    <div className="app">
-      {shouldShowSidebar && <SideBar />}
-      <div className="content">
-        <Outlet /> {/* This renders the child route components */}
+    <div className="flex min-h-screen bg-gray-50">
+      {shouldShowSidebar && (
+        <>
+          {/* Mobile Sidebar Toggle Button */}
+          {isMobile && (
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="fixed top-20 left-4 z-50 bg-blue-600 text-white p-2 rounded-lg shadow-lg hover:bg-blue-700 transition-colors md:hidden"
+              aria-label="Toggle sidebar"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {sidebarOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+          )}
+
+          {/* Sidebar Overlay for mobile */}
+          {isMobile && sidebarOpen && (
+            <div
+              className="fixed inset-0 bg-black bg-opacity-50 z-40"
+              onClick={() => setSidebarOpen(false)}
+            />
+          )}
+
+          {/* Sidebar */}
+          <div className={`
+            ${isMobile ? 'fixed' : 'relative'} 
+            ${isMobile && !sidebarOpen ? '-translate-x-full' : 'translate-x-0'}
+            transition-transform duration-300 ease-in-out z-50
+          `}>
+            <RoleBasedSideBar />
+          </div>
+        </>
+      )}
+
+      {/* Main Content */}
+      <div className={`
+        flex-1 transition-all duration-300 ease-in-out
+        ${shouldShowSidebar && !isMobile ? 'ml-20' : ''}
+        ${shouldShowSidebar ? 'pt-16' : ''}
+      `}>
+        <Outlet />
       </div>
     </div>
   );

@@ -9,9 +9,14 @@ import productRoutes from './routes/productRoutes.js'
 import profileRoutes from './routes/profileRoutes.js'
 import uploadRoutes from './routes/uploadRoutes.js'
 import testRoutes from './routes/testRoutes.js'
+import loggerRoutes from './routes/loggerRoutes.js'
+import userRoutes from './routes/userRoutes.js'
 import session from 'express-session';
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { requestLogger, errorLogger } from './middleware/loggingMiddleware.js'
+import Logger from './utils/logger.js'
+import RoleManager from './utils/roleManager.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -41,6 +46,10 @@ app.use(session({
 
 
 app.use(express.json())
+
+// Add request logging middleware
+app.use(requestLogger)
+
 app.use('/auth', authRouter)
 app.use('/data', commonRoutes)
 app.use('/branch', branchRoutes)
@@ -49,11 +58,30 @@ app.use('/product', productRoutes)
 app.use('/profile', profileRoutes)
 app.use('/fileUpload', uploadRoutes) // Assuming you have uploadRoutes defined
 app.use('/test', testRoutes)
+app.use('/logs', loggerRoutes) // Add logger routes
+app.use('/users', userRoutes) // Add user management routes
 app.get('/', (req, res) => {
     res.json({ message: "AAF CMS API Server is running", status: "OK" });
 })
 app.use('/media', express.static(path.join(__dirname, 'media')));
 
-app.listen(3000, () => {
+// Add error logging middleware (should be last)
+app.use(errorLogger)
+
+app.listen(3000, async () => {
     console.log("Server is Running on port 3000")
+    
+    // Log server startup
+    await Logger.info({
+        category: 'SYSTEM',
+        action: 'SERVER_START',
+        message: 'AAF CMS Server started successfully',
+        details: {
+            port: 3000,
+            environment: process.env.NODE_ENV || 'development',
+            timestamp: new Date().toISOString()
+        }
+    })
+    
+    console.log("Role-based access control system is active")
 })

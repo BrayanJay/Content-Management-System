@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import PropTypes from 'prop-types';
 
 const FileTable = ({fileDirectory, category}) => {
@@ -8,11 +8,13 @@ const FileTable = ({fileDirectory, category}) => {
   const updateFileInputRef = useRef(null); // ref for update hidden input
   const [newFile, setNewFile] = useState(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
   const [fileToUpdate, setFileToUpdate] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [updateFile, setUpdateFile] = useState(null);
+  const [customFileName, setCustomFileName] = useState("");
 
-  const fetchFiles = async () => {
+  const fetchFiles = useCallback(async () => {
     try {
       const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/data/getFiles?folder=media/attachments/${fileDirectory}`, {
       });
@@ -21,7 +23,7 @@ const FileTable = ({fileDirectory, category}) => {
       console.error(err);
       alert("Failed to load files");
     }
-  };
+  }, [fileDirectory]);
 
   const handleDelete = async (filePath) => {
     if (!window.confirm("Are you sure you want to delete this file?")) return;
@@ -38,35 +40,56 @@ const FileTable = ({fileDirectory, category}) => {
   };
 
   const handleUploadClick = () => {
-    fileInputRef.current.click();
+    setShowUploadModal(true);
   };
 
-  const handleNewFileChange = (e) => {
+  const handleUploadFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
     setNewFile(file);
+    setCustomFileName(file.name); // Set default name to original filename
+  };
 
-    const formData = new FormData();
-    formData.append("image", file); // Changed from "image" to "file" to match API
-    formData.append("filename", file.name);
-    formData.append("file_directory", `media/attachments/${fileDirectory}`);
+  const handleUploadSubmit = async () => {
+    if (!newFile) {
+      alert("Please select a file to upload");
+      return;
+    }
 
-    axios
-      .post(`${import.meta.env.VITE_API_BASE_URL}/data/upload`, formData, {
+    if (!customFileName.trim()) {
+      alert("Please enter a filename");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("file", newFile); // Fixed field name from "image" to "file"
+      formData.append("filename", customFileName);
+      formData.append("file_directory", `media/attachments/${fileDirectory}`);
+
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/data/upload`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
         withCredentials: true,
-      })
-      .then((res) => {
-        alert(res.data.message);
-        fetchFiles(); // refresh table
-        fileInputRef.current.value = ""; // reset input
-      })
-      .catch((err) => {
-        alert("Upload failed");
-        console.error(err);
       });
+
+      alert(response.data.message);
+      fetchFiles(); // refresh table
+      closeUploadModal();
+    } catch (err) {
+      alert("Upload failed");
+      console.error(err);
+    }
+  };
+
+  const closeUploadModal = () => {
+    setShowUploadModal(false);
+    setNewFile(null);
+    setCustomFileName("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handleUpdateClick = (file) => {
@@ -86,11 +109,11 @@ const FileTable = ({fileDirectory, category}) => {
       return;
     }
 
-    try {;
+    try {
       const formData = new FormData();
-      formData.append("image", updateFile);
+      formData.append("file", updateFile); // Fixed field name from "image" to "file"
       formData.append("filename", fileToUpdate.fileName); // Keep the same filename
-      formData.append("file_directory", fileToUpdate.path.substring(0, fileToUpdate.path.lastIndexOf('/')));
+      formData.append("file_directory", `media/attachments/${fileDirectory}`); // Use fileDirectory parameter
 
       const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/data/upload`, formData, {
         headers: {
@@ -148,7 +171,7 @@ const FileTable = ({fileDirectory, category}) => {
 
   useEffect(() => {
     fetchFiles();
-  }, []);
+  }, [fetchFiles]);
 
   return (
     <div className="p-4">
@@ -164,7 +187,7 @@ const FileTable = ({fileDirectory, category}) => {
           type="file"
           ref={fileInputRef}
           className="hidden"
-          onChange={handleNewFileChange}
+          onChange={handleUploadFileChange}
         />
       </div>
 
@@ -254,6 +277,71 @@ const FileTable = ({fileDirectory, category}) => {
                 disabled={!updateFile}
               >
                 Update File
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Upload Modal */}
+      {showUploadModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-xl font-bold mb-4">Upload New File</h3>
+            
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Select File
+              </label>
+              <div className="border-2 border-dashed border-gray-300 p-6 text-center">
+                {newFile ? (
+                  <div>
+                    <p className="text-green-600 font-semibold">File selected: {newFile.name}</p>
+                    <p className="text-sm text-gray-500">({Math.round(newFile.size / 1024)} KB)</p>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="mb-2">Choose a file to upload</p>
+                    <button 
+                      onClick={() => fileInputRef.current.click()}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                    >
+                      Choose File
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                File Name
+              </label>
+              <input
+                type="text"
+                value={customFileName}
+                onChange={(e) => setCustomFileName(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter filename..."
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                The file will be saved in: media/attachments/{fileDirectory}
+              </p>
+            </div>
+
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={closeUploadModal}
+                className="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUploadSubmit}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+                disabled={!newFile || !customFileName.trim()}
+              >
+                Upload File
               </button>
             </div>
           </div>

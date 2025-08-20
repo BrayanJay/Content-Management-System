@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
 
 const UploadCard = ({
   label = "Upload File",
@@ -38,13 +39,20 @@ const UploadCard = ({
     formData.append("file", file);
 
     // Append custom or default filename
-    formData.append("filename", customFileName || file.name);
+    const finalFilename = customFileName || file.name;
+    formData.append("filename", finalFilename);
 
     // Append custom or type-based default directory
-    formData.append(
-      "directory",
-      customDirectory || getDefaultDirectory(file.type)
-    );
+    const finalDirectory = customDirectory || getDefaultDirectory(file.type);
+    formData.append("directory", finalDirectory);
+
+    console.log('Upload details:', {
+      filename: finalFilename,
+      directory: finalDirectory,
+      uploadUrl,
+      fileType: file.type,
+      fileSize: file.size
+    });
 
     setLoading(true);
     try {
@@ -55,16 +63,24 @@ const UploadCard = ({
       });
 
       const data = await response.json();
+      console.log('Upload response:', { status: response.status, data });
 
       if (response.ok) {
         setStatus("Upload successful!");
+        setFile(null); // Clear file after successful upload
+        const fileInput = document.querySelector('input[type="file"]');
+        if (fileInput) fileInput.value = "";
         onUploadSuccess && onUploadSuccess(data);
       } else {
-        setStatus(data.message || "Upload failed");
+        const errorMessage = data.message || `Upload failed with status ${response.status}`;
+        setStatus(errorMessage);
+        console.error('Upload error:', data);
         onUploadError && onUploadError(data);
       }
     } catch (err) {
-      setStatus("Network or server error");
+      const errorMessage = err.message || "Network or server error";
+      setStatus(errorMessage);
+      console.error('Network/Server error:', err);
       onUploadError && onUploadError(err);
     } finally {
       setLoading(false);
@@ -74,11 +90,8 @@ const UploadCard = ({
   const handleClear = () => {
         setFile(null);
         setStatus(null);
-        // Reset the file input by finding it via ref or resetting the component
         const fileInput = document.querySelector('input[type="file"]');
-        if (fileInput) {
-          fileInput.value = "";
-        }
+        if (fileInput) fileInput.value = ""; // Reset input field
     };
 
   return (
@@ -104,9 +117,25 @@ const UploadCard = ({
         {loading ? "Uploading..." : buttonText}
       </button>
       
-      {status && <p className="text-sm text-red-600">{status}</p>}
+      {status && (
+        <p className={`text-sm ${status.includes('successful') ? 'text-green-600' : 'text-red-600'}`}>
+          {status}
+        </p>
+      )}
     </div>
   );
+};
+
+UploadCard.propTypes = {
+  label: PropTypes.string,
+  uploadUrl: PropTypes.string,
+  acceptedTypes: PropTypes.string,
+  maxSizeMB: PropTypes.number,
+  customFileName: PropTypes.string,
+  customDirectory: PropTypes.string,
+  onUploadSuccess: PropTypes.func,
+  onUploadError: PropTypes.func,
+  buttonText: PropTypes.string,
 };
 
 export default UploadCard;

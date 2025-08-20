@@ -22,7 +22,7 @@ function UploadFile() {
   formData.append("file_directory", "media/landing_page_carousel");
 
   try {
-    const response = await axios.post("http://localhost:3000/data/upload", formData, {
+    const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/data/upload`, formData, {
       withCredentials: true,
       headers: { "Content-Type": "multipart/form-data" },
     });
@@ -42,7 +42,7 @@ function UploadFile() {
   const navigate = useNavigate()
   const fetchUser = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/auth/landingpagecontents', { //Change here
+      await axios.get(`${import.meta.env.VITE_API_BASE_URL}/auth/landingpagecontents`, {
         withCredentials: true,
       })
     } catch(err){
