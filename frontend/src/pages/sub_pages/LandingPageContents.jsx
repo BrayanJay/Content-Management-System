@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-//import PopupToggle from "../../components/PopupToggle";
+import PopupToggle from "../../components/PopupToggle";
 import UploadCard from "../../components/UploadCard";
 
 function LandingPageContents() {
@@ -50,17 +50,21 @@ function LandingPageContents() {
         ))}
 
         <div className="flex flex-col gap-3 w-full py-10">
-          <h1 className="text-blue-800 font-semibold text-xl">Popup Media</h1>
-          {/* <PopupToggle tokenUrl={tokenUrl}/> */}
-          <UploadCard
-            label="Popup Image"
-            uploadUrl={`${import.meta.env.VITE_API_BASE_URL}/fileUpload/upload/image`}
-            acceptedTypes="image/png,image/webp"
-            maxSizeMB={1}
-            customFileName="popup.webp"
-            customDirectory="media/uploads"
-            onUploadSuccess={(data) => console.log("Uploaded!", data)}
-          />
+          <h1 className="text-blue-800 font-semibold text-xl">Popup Management</h1>
+          <PopupToggle />
+          
+          <div className="mt-6">
+            <h2 className="text-blue-800 font-semibold text-lg mb-3">Popup Media</h2>
+            <UploadCard
+              label="Popup Image"
+              uploadUrl={`${import.meta.env.VITE_API_BASE_URL}/fileUpload/upload/image`}
+              acceptedTypes="image/png,image/webp"
+              maxSizeMB={1}
+              customFileName="popup.webp"
+              customDirectory="media/uploads"
+              onUploadSuccess={(data) => console.log("Uploaded!", data)}
+            />
+          </div>
       </div>
       </div>
     </div>

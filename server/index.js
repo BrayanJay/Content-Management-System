@@ -4,11 +4,9 @@ import 'dotenv/config'
 import authRouter from './routes/authRoutes.js'
 import commonRoutes from './routes/commonRoutes.js'
 import branchRoutes from './routes/branchRoutes.js'
-//import popupRoutes from './routes/popupRoutes.js'
 import productRoutes from './routes/productRoutes.js'
 import profileRoutes from './routes/profileRoutes.js'
 import uploadRoutes from './routes/uploadRoutes.js'
-import testRoutes from './routes/testRoutes.js'
 import loggerRoutes from './routes/loggerRoutes.js'
 import userRoutes from './routes/userRoutes.js'
 import sessionRoutes from './routes/sessionRoutes.js'
@@ -17,7 +15,6 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { requestLogger, errorLogger } from './middleware/loggingMiddleware.js'
 import Logger from './utils/logger.js'
-import RoleManager from './utils/roleManager.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -59,11 +56,9 @@ app.use(requestLogger)
 app.use('/auth', authRouter)
 app.use('/data', commonRoutes)
 app.use('/branch', branchRoutes)
-//app.use('/popup', popupRoutes)
 app.use('/product', productRoutes)
 app.use('/profile', profileRoutes)
 app.use('/fileUpload', uploadRoutes) // Assuming you have uploadRoutes defined
-app.use('/test', testRoutes)
 app.use('/logs', loggerRoutes) // Add logger routes
 app.use('/users', userRoutes) // Add user management routes
 app.use('/sessions', sessionRoutes) // Add session monitoring routes

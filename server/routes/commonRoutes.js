@@ -150,58 +150,6 @@ router.delete("/delete/:filename", verifySessionToken, async (req, res) => {
 });
 
 
-// ------------------------------- TEST APIs ------------------------------------------ //
-
-// GET toggle state
-router.get('/getPopup', async (req, res) => {
-
-  let db;
-  try {
-    db = await connectToDatabase();
-    const [result] = await db.query('SELECT status FROM popup_status WHERE id = 1');
-    if (result.length > 0) {
-      res.json(result[0]);
-    } else {
-      res.status(404).json({ message: 'Not found' });
-    }
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
-
-// PUT toggle state
-router.put('/updatePopup', verifySessionToken, async (req, res) => {
-  const { status } = req.body;
-  console.log("Received PUT request with:", { status });
-  
-  if (typeof status !== 'boolean') {
-  return res.status(400).json({ error: 'Invalid input' });
-  }
-
-  let db;
-  try {
-    db = await connectToDatabase();
-
-    const [userRows] = await db.query("SELECT username FROM users WHERE id = ?", [req.userId]);
-    if (userRows.length === 0) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    const updated_by = userRows[0].username;
-    
-    await db.query(
-      'UPDATE popup_status SET status = ?, updated_by = ? WHERE id = 1',
-      [status, updated_by]
-    );
-    
-    res.json({ message: 'Updated successfully' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Update failed' });
-  }
-});
-
-
 // ------------------------------- WEBSITE APIs ------------------------------------------ //
 
 // Fetch Product Pages' Contents to the Website
@@ -370,12 +318,132 @@ router.get('/read/profile/:id/:lang', async (req, res) => {
     console.error("Error fetching profile data:", error.message);
     res.status(500).json({ message: "Internal Server Error" });
 
-  } finally {
-    if (db) db.release(); // ✅ Ensure connection is released
   }
 });
 
+// ------------------------------- POPUP MANAGEMENT ROUTES ------------------------------------------ //
 
+// GET /data/popup/status - Get current popup status
+router.get('/popup/status', async (req, res) => {
+  const startTime = Date.now();
+  let db;
+  
+  try {
+    db = await connectToDatabase();
+    
+    // Get popup status
+    const [rows] = await db.query(
+      'SELECT id, status, updated_at, updated_by, created_at FROM popup_status WHERE id = 1'
+    );
+
+    if (rows.length === 0) {
+      // If no record exists, create default record
+      await db.query(
+        'INSERT INTO popup_status (id, status, updated_by) VALUES (1, ?, ?)',
+        ['disabled', 'system']
+      );
+      
+      // Fetch the newly created record
+      const [newRows] = await db.query(
+        'SELECT id, status, updated_at, updated_by, created_at FROM popup_status WHERE id = 1'
+      );
+      
+      const executionTime = Date.now() - startTime;
+
+      return res.json({
+        success: true,
+        data: newRows[0],
+        executionTime
+      });
+    }
+
+    const executionTime = Date.now() - startTime;
+
+    res.json({
+      success: true,
+      data: rows[0],
+      executionTime
+    });
+
+  } catch (error) {
+    const executionTime = Date.now() - startTime;
+    
+    console.error('Error fetching popup status:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve popup status',
+      error: error.message
+    });
+  } finally {
+    if (db) db.release();
+  }
+});
+
+// PUT /data/popup/status - Update popup status
+router.put('/popup/status', verifySessionToken, async (req, res) => {
+  const startTime = Date.now();
+  const { status } = req.body;
+  let db;
+
+  // Validate status value
+  if (!status || !['enabled', 'disabled'].includes(status)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid status. Must be "enabled" or "disabled".'
+    });
+  }
+
+  try {
+    db = await connectToDatabase();
+    
+    // Get current status for comparison
+    const [currentRows] = await db.query(
+      'SELECT status FROM popup_status WHERE id = 1'
+    );
+
+    const previousStatus = currentRows.length > 0 ? currentRows[0].status : null;
+
+    // Update popup status
+    const [result] = await db.query(
+      'UPDATE popup_status SET status = ?, updated_by = ?, updated_at = CURRENT_TIMESTAMP WHERE id = 1',
+      [status, req.userId || 'unknown']
+    );
+
+    // If no rows were affected, create the record
+    if (result.affectedRows === 0) {
+      await db.query(
+        'INSERT INTO popup_status (id, status, updated_by) VALUES (1, ?, ?)',
+        [status, req.userId || 'unknown']
+      );
+    }
+
+    // Get updated record
+    const [updatedRows] = await db.query(
+      'SELECT id, status, updated_at, updated_by, created_at FROM popup_status WHERE id = 1'
+    );
+
+    const executionTime = Date.now() - startTime;
+
+    res.json({
+      success: true,
+      message: `Popup status updated to ${status} successfully`,
+      data: updatedRows[0],
+      executionTime
+    });
+
+  } catch (error) {
+    const executionTime = Date.now() - startTime;
+    
+    console.error('Error updating popup status:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update popup status',
+      error: error.message
+    });
+  } finally {
+    if (db) db.release();
+  }
+});
 
 
 export default router;
