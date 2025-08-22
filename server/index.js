@@ -11,6 +11,7 @@ import uploadRoutes from './routes/uploadRoutes.js'
 import testRoutes from './routes/testRoutes.js'
 import loggerRoutes from './routes/loggerRoutes.js'
 import userRoutes from './routes/userRoutes.js'
+import sessionRoutes from './routes/sessionRoutes.js'
 import session from 'express-session';
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -37,11 +38,16 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
+  name: 'aaf.cms.sid', // Custom session name to avoid conflicts
   cookie: {
     httpOnly: true,
     secure: false, // true in production with HTTPS
-    maxAge: 3 * 1000 * 60 * 60 // 3 hours 
-  }
+    maxAge: 3 * 1000 * 60 * 60, // 3 hours 
+    sameSite: 'lax' // Better cross-browser support
+  },
+  // Enable concurrent sessions for multiple users
+  rolling: true, // Reset expiry on activity
+  unset: 'destroy' // Cleanup on logout
 }))
 
 
@@ -60,6 +66,7 @@ app.use('/fileUpload', uploadRoutes) // Assuming you have uploadRoutes defined
 app.use('/test', testRoutes)
 app.use('/logs', loggerRoutes) // Add logger routes
 app.use('/users', userRoutes) // Add user management routes
+app.use('/sessions', sessionRoutes) // Add session monitoring routes
 app.get('/', (req, res) => {
     res.json({ message: "AAF CMS API Server is running", status: "OK" });
 })

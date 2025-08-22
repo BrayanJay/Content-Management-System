@@ -14,7 +14,7 @@ const ProductDescription = ({table_name, tokenUrl}) => {
     useEffect(() => {
         const fetchData = async () => {
           try {
-            const res = await axios.get(`http://localhost:3000/product/read/${table_name}`);
+            const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/product/read/${table_name}`);
             setData(Array.isArray(res.data) ? res.data : []);
           } catch (err) {
             console.log("Error fetching data:", err.message);
@@ -37,45 +37,48 @@ const ProductDescription = ({table_name, tokenUrl}) => {
   };
 
   return (
-        <div>
-            <label className="text-blue-800 font-semibold text-xl">Product Description</label>
-            <table className="w-full table-auto border">
-                    <thead className='bg-blue-200'>
-                        <tr>
-                            <th className="px-3 py-2 text-left min-w-24">Content</th>
-                            <th className="px-3 py-2 text-left">Language</th>
-                            <th className="px-3 py-2 text-left">Current Value</th>
-                            <th className="px-3 py-2 text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.length > 0 ? (
-                          data.map( (product, index) => (
-                            <tr className=' odd:bg-blue-50 even:bg-blue-100' key={index}>
-                              <th className="py-2 px-3">Description</th>
-                                <td className="py-2 px-3">{product.lang}</td>
-                                <td className="py-2 px-3 max-w-96">{product.description}</td>
-                                <td className="px-3 py-2 text-center min-w-36">
-                                  <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded mr-2" 
-                                    onClick={() => handleUpdateClick(product)}>
-                                    Update
-                                  </button>
-                                  <button className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
-                                    onClick={() => handleRemoveClick(product)}>
-                                    Remove
-                                  </button>
-                                </td>
-                            </tr>
-                            ))
-                          ) : (
+        <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">Product Description</h2>
+            
+            <div className="overflow-x-auto">
+                <table className="min-w-full bg-white border border-gray-200">
+                        <thead className="bg-gray-50">
                             <tr>
-                                    <td colSpan="3" className="text-center border border-gray-300 px-4 py-2 text-gray-500">
-                                      No data available
+                                <th className="px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Content</th>
+                                <th className="px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Language</th>
+                                <th className="px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Value</th>
+                                <th className="px-4 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                            {data.length > 0 ? (
+                              data.map( (product, index) => (
+                                <tr className="hover:bg-gray-50" key={index}>
+                                  <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Description</td>
+                                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{product.lang}</td>
+                                    <td className="px-4 py-4 text-sm text-gray-900 max-w-md truncate">{product.description}</td>
+                                    <td className="px-4 py-4 text-center">
+                                      <button className="bg-sky-600 hover:bg-sky-700 text-white px-3 py-1 rounded mr-2 transition-colors text-sm" 
+                                        onClick={() => handleUpdateClick(product)}>
+                                        Update
+                                      </button>
+                                      <button className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition-colors text-sm"
+                                        onClick={() => handleRemoveClick(product)}>
+                                        Remove
+                                      </button>
                                     </td>
-                                  </tr>
-                          )}
-                    </tbody>
-            </table>
+                                </tr>
+                                ))
+                              ) : (
+                                <tr>
+                                        <td colSpan="4" className="px-4 py-12 text-center text-gray-500">
+                                          No data available
+                                        </td>
+                                      </tr>
+                              )}
+                        </tbody>
+                </table>
+            </div>
 
             {/* Render Popup only when isPopupOpen is true */}
       {isPopupOpen && selectedItem && (

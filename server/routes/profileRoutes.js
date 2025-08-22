@@ -225,16 +225,32 @@ router.post("/addProfile", verifySessionToken, async (req, res) => {
     descriptionTa: Array.isArray(descriptionTa) ? descriptionTa : "Not an array"
   });
 
+  console.log("User ID from middleware:", req.userId);
+  console.log("Session data:", req.session);
+
   let db;
   try {
     db = await connectToDatabase();
 
-    // Retrieve admin username
-    const [userRows] = await db.query("SELECT username FROM users WHERE id = ?", [req.userId]);
-    if (userRows.length === 0) {
-      return res.status(404).json({ message: "User not found" });
+    let uploadedBy = "System"; // Default value
+
+    // Try to get user information if userId is available
+    if (req.userId) {
+      try {
+        const [userRows] = await db.query("SELECT username FROM users WHERE id = ?", [req.userId]);
+        if (userRows.length > 0) {
+          uploadedBy = userRows[0].username;
+        } else {
+          console.warn("User not found in database, using default uploadedBy");
+        }
+      } catch (userError) {
+        console.warn("Error retrieving user info, using default uploadedBy:", userError.message);
+      }
+    } else {
+      console.warn("No userId in request, using default uploadedBy");
     }
-    const uploadedBy = userRows[0].username;
+
+    console.log("uploadedBy value:", uploadedBy);
 
     let rows;
     let lastProfile;
@@ -296,12 +312,23 @@ router.put('/updateProfile', verifySessionToken, async (req, res) => {
     // Capture real time
     const uploadedAt = new Date();
 
-    // Retrieve admin username
-    const [userRows] = await db.query("SELECT username FROM users WHERE id = ?", [req.userId]);
-    if (userRows.length === 0) {
-      return res.status(404).json({ message: "User not found" });
+    let uploadedBy = "System"; // Default value
+
+    // Try to get user information if userId is available
+    if (req.userId) {
+      try {
+        const [userRows] = await db.query("SELECT username FROM users WHERE id = ?", [req.userId]);
+        if (userRows.length > 0) {
+          uploadedBy = userRows[0].username;
+        } else {
+          console.warn("User not found in database during profile update, using default uploadedBy");
+        }
+      } catch (userError) {
+        console.warn("Error retrieving user info during profile update, using default uploadedBy:", userError.message);
+      }
+    } else {
+      console.warn("No userId in request during profile update, using default uploadedBy");
     }
-    const uploadedBy = userRows[0].username;
 
     // Update the profile content
     if (type === 'bod') {

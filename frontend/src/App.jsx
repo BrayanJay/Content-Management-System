@@ -8,7 +8,7 @@ import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
 import Unauthorized from './pages/Unauthorized'
 import SecurityMonitor from './components/SecurityMonitor'
-import DashboardUpload from './pages/DashboardUpload'
+import Dashboard from './pages/Dashboard'
 import LandingPageContents from './pages/sub_pages/LandingPageContents'
 import AboutPageContents from './pages/sub_pages/AboutPageContents'
 import ProductsPageContents from './pages/sub_pages/ProductsPageContents'
@@ -24,6 +24,7 @@ import LuckewalletPageContents from './pages/sub_pages/products_pages/Luckewalle
 import BranchNetwork from './pages/BranchNetwork'
 import Documents from './pages/Documents'
 import AddProfile from './components/profiles/AddProfile'
+import AddBranch from './components/AddBranch'
 import UserManagement from './pages/admin/UserManagement'
 import SystemLogs from './pages/admin/SystemLogs'
 import { AuthProvider } from './contexts/AuthContext'
@@ -51,7 +52,7 @@ function App() {
               {/* Dashboard/Upload - Contributors and above can upload */}
               <Route path='/' element={
                 <ProtectedRoute requiredRole="contributor+">
-                  <DashboardUpload/>
+                  <Dashboard/>
                 </ProtectedRoute>
               }/>
 
@@ -59,6 +60,18 @@ function App() {
               <Route path='/branch-network' element={
                 <ProtectedRoute requiredPermission="branches:read">
                   <BranchNetwork/>
+                </ProtectedRoute>
+              }/>
+              <Route path='/branches' element={
+                <ProtectedRoute requiredPermission="branches:read">
+                  <BranchNetwork/>
+                </ProtectedRoute>
+              }/>
+
+              {/* Add Branch - Contributors and above can create */}
+              <Route path='/branches/add' element={
+                <ProtectedRoute requiredPermission="branches:create">
+                  <AddBranch/>
                 </ProtectedRoute>
               }/>
 

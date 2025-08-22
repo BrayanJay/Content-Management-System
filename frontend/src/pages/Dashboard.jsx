@@ -1,9 +1,39 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from '../hooks/useAuth.js';
+import axios from "axios";
+import { FaBuildingColumns, FaChartPie } from "react-icons/fa6";
 
-const DashboardUpload = () => {
+const Dashboard = () => {
   const { user, hasPermission } = useAuth();
+  const [regionStats, setRegionStats] = useState([]);
+  const [isLoadingStats, setIsLoadingStats] = useState(true);
+
+  // Fetch branch statistics
+  useEffect(() => {
+    const fetchBranchStats = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/branch/branches/stats/regions`,
+          { withCredentials: true }
+        );
+        
+        // The response already contains the region statistics in the correct format
+        const stats = response.data.map(stat => ({
+          region: stat.region_name_en,
+          count: stat.branch_count
+        })).sort((a, b) => b.count - a.count); // Sort by count descending
+        
+        setRegionStats(stats);
+      } catch (error) {
+        console.error("Error fetching branch statistics:", error);
+      } finally {
+        setIsLoadingStats(false);
+      }
+    };
+
+    fetchBranchStats();
+  }, []);
 
   // Check permissions when component mounts
   useEffect(() => {
@@ -64,7 +94,7 @@ const DashboardUpload = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 pt-20 md:pt-24">
       {/* Welcome Section */}
       <div className="bg-white shadow-sm border-b border-gray-200 rounded-lg mb-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -89,6 +119,63 @@ const DashboardUpload = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto">
+        {/* Branch Network Overview */}
+        <div className="mb-8 bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <FaChartPie className="text-blue-600 text-xl" />
+            <h2 className="text-xl font-bold text-gray-800">Branch Network Overview</h2>
+          </div>
+          
+          {isLoadingStats ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <span className="ml-2 text-gray-600">Loading statistics...</span>
+            </div>
+          ) : regionStats.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              {regionStats.map((stat, index) => (
+                <div 
+                  key={stat.region} 
+                  className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">
+                        {stat.region.charAt(0).toUpperCase() + stat.region.slice(1)}
+                      </p>
+                      <p className="text-2xl font-bold text-blue-700">{stat.count}</p>
+                      <p className="text-xs text-gray-500">
+                        {stat.count === 1 ? 'Branch' : 'Branches'}
+                      </p>
+                    </div>
+
+                  </div>
+                </div>
+              ))}
+              
+              {/* Total Summary Card */}
+              <div className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Total</p>
+                    <p className="text-2xl font-bold text-green-700">
+                      {regionStats.reduce((sum, stat) => sum + stat.count, 0)}
+                    </p>
+                    <p className="text-xs text-gray-500">All Branches</p>
+                  </div>
+                  <div className="bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center">
+                    <FaBuildingColumns className="text-sm" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-gray-500">No branch data available</p>
+            </div>
+          )}
+        </div>
+
         {/* Security Notice */}
         <div className="mb-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div className="flex items-start">
@@ -163,4 +250,4 @@ const DashboardUpload = () => {
   );
 };
 
-export default DashboardUpload;
+export default Dashboard;

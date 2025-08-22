@@ -8,45 +8,61 @@ import UploadCard from "../../../components/UploadCard";
 function ForexPageContents() {
     
   const table_name = "forex";
-
   const navigate = useNavigate()
-  const fetchUser = async () => {
-    try {
-      await axios.get(`${import.meta.env.VITE_API_BASE_URL}/auth/forexpagecontents`, {
-        withCredentials: true,
-      })
-    } catch(err){
-      navigate('/login')
-      console.log(err)
-    }
-  }
 
   useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        await axios.get(`${import.meta.env.VITE_API_BASE_URL}/auth/forexpagecontents`, {
+          withCredentials: true,
+        })
+      } catch(err){
+        navigate('/login')
+        console.log(err)
+      }
+    }
+
     fetchUser()
-  }, [])
+  }, [navigate])
 
   return (
-    <div className="flex justify-center container py-20">
-      <div className="w-full m-10 px-20">
-        
-        <div className="flex flex-col gap-3 w-full py-10">
-          <h1 className="text-blue-800 font-semibold text-xl">Forex Page Banner</h1>
-          <UploadCard
-            label="Carousel Image"
-            uploadUrl={`${import.meta.env.VITE_API_BASE_URL}/fileUpload/upload/image`}
-            acceptedTypes="image/png,image/webp"
-            maxSizeMB={1}
-            customFileName="fePgBanner.webp"
-            customDirectory="media/products"
-            onUploadSuccess={(data) => console.log("Uploaded!", data)}
-          />
-        </div>
-        
-        <div>
-          <ProductDescription table_name={table_name} tokenUrl={`${import.meta.env.VITE_API_BASE_URL}/auth/forexpagecontents`}/>
-          <FileTable fileDirectory="products/forex" category="Key Fact Documents"/>
-        </div>
+    <div className="p-4 md:p-6 pt-20 md:pt-24">
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-white rounded-lg shadow-md p-4 md:p-6">
+          <h1 className="text-2xl font-bold text-gray-800 mb-6">Forex Page Management</h1>
+          
+          {/* Banner Upload Section */}
+          <div className="bg-gray-50 p-4 rounded-lg mb-6">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Page Banner</h2>
+            <UploadCard
+              label="Carousel Image"
+              uploadUrl={`${import.meta.env.VITE_API_BASE_URL}/fileUpload/upload/image`}
+              acceptedTypes="image/png,image/webp"
+              maxSizeMB={1}
+              customFileName="fePgBanner.webp"
+              customDirectory="media/products"
+              onUploadSuccess={(data) => console.log("Uploaded!", data)}
+            />
+          </div>
 
+          {/* Product Description Section */}
+          <div className="mb-8">
+            <ProductDescription 
+              table_name={table_name} 
+              tokenUrl={`${import.meta.env.VITE_API_BASE_URL}/auth/forexpagecontents`}
+            />
+          </div>
+
+          {/* File Tables Section */}
+          <div className="space-y-8">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Key Fact Documents</h3>
+              <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                <FileTable fileDirectory="products/forex" category="Key Fact Documents"/>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

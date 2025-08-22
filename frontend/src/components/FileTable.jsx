@@ -174,12 +174,12 @@ const FileTable = ({fileDirectory, category}) => {
   }, [fetchFiles]);
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-blue-600">{category}</h2>
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">{category}</h2>
         <button
           onClick={handleUploadClick}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow"
+          className="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded transition-colors"
         >
           + New Upload
         </button>
@@ -191,49 +191,57 @@ const FileTable = ({fileDirectory, category}) => {
         />
       </div>
 
-      <table className="w-full table-auto border">
-        <thead className="bg-blue-200">
-          <tr>
-            <th className="px-3 py-2 text-left">File Name</th>
-            <th className="px-3 py-2 text-left">Path</th>
-            <th className="px-3 py-2 text-left">Last Updated</th>
-            <th className="px-3 py-2 text-center">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {files.map((file, idx) => (
-            <tr key={idx} className="border-t">
-              <td className="px-3 py-2 min-w-44 max-w-48 whitespace-normal break-words">{file.fileName}</td>
-              <td className="px-3 py-2 min-w-80 max-w-96 whitespace-normal break-words">{file.path}</td>
-              <td className="px-3 py-2 max-w-40">{new Date(file.updatedAt).toLocaleString()}</td>
-              <td className="px-3 py-2 text-center max-w-36">
-                <button
-                  className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded mr-2"
-                  onClick={() => handleUpdateClick(file)}
-                >
-                  Update
-                </button>
-                <button
-                  className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
-                  onClick={() => handleDelete(file.path)}
-                >
-                  Delete
-                </button>
-              </td>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white border border-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File Name</th>
+              <th className="px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Path</th>
+              <th className="px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Updated</th>
+              <th className="px-4 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {files.map((file, idx) => (
+              <tr key={idx} className="hover:bg-gray-50">
+                <td className="px-4 py-4 text-sm text-gray-900 max-w-xs truncate">{file.fileName}</td>
+                <td className="px-4 py-4 text-sm text-gray-500 max-w-md truncate">{file.path}</td>
+                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{new Date(file.updatedAt).toLocaleString()}</td>
+                <td className="px-4 py-4 text-center">
+                  <button
+                    className="bg-sky-600 hover:bg-sky-700 text-white px-3 py-1 rounded mr-2 transition-colors text-sm"
+                    onClick={() => handleUpdateClick(file)}
+                  >
+                    Update
+                  </button>
+                  <button
+                    className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded transition-colors text-sm"
+                    onClick={() => handleDelete(file.path)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {files.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-gray-500">No files found in this directory.</p>
+        </div>
+      )}
 
       {/* Update Modal */}
       {showUpdateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-xl font-bold mb-4">Update File</h3>
-            <p className="mb-4">Current file: <span className="font-semibold">{fileToUpdate?.fileName}</span></p>
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md mx-4">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">Update File</h3>
+            <p className="mb-4 text-gray-600">Current file: <span className="font-semibold text-gray-800">{fileToUpdate?.fileName}</span></p>
             
             <div 
-              className={`border-2 border-dashed p-8 mb-4 text-center ${isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}`}
+              className={`border-2 border-dashed p-8 mb-6 text-center rounded-lg transition-colors ${isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300 bg-gray-50'}`}
               onDragEnter={handleDragEnter}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
@@ -246,11 +254,11 @@ const FileTable = ({fileDirectory, category}) => {
                 </div>
               ) : (
                 <div>
-                  <p className="mb-2">Drag & drop your file here</p>
-                  <p className="text-sm text-gray-500">or</p>
+                  <p className="mb-2 text-gray-600">Drag & drop your file here</p>
+                  <p className="text-sm text-gray-500 mb-3">or</p>
                   <button 
                     onClick={() => updateFileInputRef.current.click()}
-                    className="mt-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                    className="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded transition-colors"
                   >
                     Choose File
                   </button>
@@ -264,16 +272,16 @@ const FileTable = ({fileDirectory, category}) => {
               />
             </div>
 
-            <div className="flex justify-end space-x-2">
+            <div className="flex justify-end space-x-3">
               <button
                 onClick={closeUpdateModal}
-                className="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded"
+                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleUpdateFileSubmit}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+                className="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={!updateFile}
               >
                 Update File
@@ -286,14 +294,14 @@ const FileTable = ({fileDirectory, category}) => {
       {/* Upload Modal */}
       {showUploadModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-xl font-bold mb-4">Upload New File</h3>
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md mx-4">
+            <h3 className="text-xl font-bold text-gray-800 mb-6">Upload New File</h3>
             
-            <div className="mb-4">
+            <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Select File
               </label>
-              <div className="border-2 border-dashed border-gray-300 p-6 text-center">
+              <div className="border-2 border-dashed border-gray-300 bg-gray-50 p-6 text-center rounded-lg">
                 {newFile ? (
                   <div>
                     <p className="text-green-600 font-semibold">File selected: {newFile.name}</p>
@@ -301,10 +309,10 @@ const FileTable = ({fileDirectory, category}) => {
                   </div>
                 ) : (
                   <div>
-                    <p className="mb-2">Choose a file to upload</p>
+                    <p className="mb-3 text-gray-600">Choose a file to upload</p>
                     <button 
                       onClick={() => fileInputRef.current.click()}
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                      className="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded transition-colors"
                     >
                       Choose File
                     </button>
@@ -313,7 +321,7 @@ const FileTable = ({fileDirectory, category}) => {
               </div>
             </div>
 
-            <div className="mb-4">
+            <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 File Name
               </label>
@@ -321,24 +329,24 @@ const FileTable = ({fileDirectory, category}) => {
                 type="text"
                 value={customFileName}
                 onChange={(e) => setCustomFileName(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter filename..."
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 mt-2">
                 The file will be saved in: media/attachments/{fileDirectory}
               </p>
             </div>
 
-            <div className="flex justify-end space-x-2">
+            <div className="flex justify-end space-x-3">
               <button
                 onClick={closeUploadModal}
-                className="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded"
+                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleUploadSubmit}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+                className="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={!newFile || !customFileName.trim()}
               >
                 Upload File

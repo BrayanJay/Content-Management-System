@@ -112,7 +112,7 @@ const UserManagement = () => {
   }
 
   return (
-    <div className="p-6 mt-20 ml-24">
+    <div className="p-4 md:p-6 pt-20 md:pt-24">
       <div className="max-w-6xl mx-auto">
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex justify-between items-center mb-6">

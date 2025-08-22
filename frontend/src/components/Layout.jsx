@@ -30,17 +30,17 @@ const Layout = () => {
   }, [location.pathname, isMobile]);
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
       {shouldShowSidebar && (
         <>
           {/* Mobile Sidebar Toggle Button */}
           {isMobile && (
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="fixed top-20 left-4 z-50 bg-blue-600 text-white p-2 rounded-lg shadow-lg hover:bg-blue-700 transition-colors md:hidden"
+              className="fixed top-20 left-4 z-[60] bg-blue-600 text-white p-3 rounded-xl shadow-lg hover:bg-blue-700 transition-colors md:hidden"
               aria-label="Toggle sidebar"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {sidebarOpen ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 ) : (
@@ -50,30 +50,20 @@ const Layout = () => {
             </button>
           )}
 
-          {/* Sidebar Overlay for mobile */}
-          {isMobile && sidebarOpen && (
-            <div
-              className="fixed inset-0 bg-black bg-opacity-50 z-40"
-              onClick={() => setSidebarOpen(false)}
-            />
-          )}
-
           {/* Sidebar */}
-          <div className={`
-            ${isMobile ? 'fixed' : 'relative'} 
-            ${isMobile && !sidebarOpen ? '-translate-x-full' : 'translate-x-0'}
-            transition-transform duration-300 ease-in-out z-50
-          `}>
-            <RoleBasedSideBar />
-          </div>
+          <RoleBasedSideBar 
+            isMobile={isMobile}
+            isOpen={sidebarOpen}
+            onClose={() => setSidebarOpen(false)}
+          />
         </>
       )}
 
       {/* Main Content */}
       <div className={`
-        flex-1 transition-all duration-300 ease-in-out
-        ${shouldShowSidebar && !isMobile ? 'ml-20' : ''}
-        ${shouldShowSidebar ? 'pt-16' : ''}
+        transition-all duration-300 ease-in-out
+        ${shouldShowSidebar && !isMobile ? 'md:ml-20' : ''}
+        min-h-screen
       `}>
         <Outlet />
       </div>

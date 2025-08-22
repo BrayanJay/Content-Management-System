@@ -91,195 +91,228 @@ const GetProfileDetails = () => {
 
 
   return (
+    <div className="p-4 md:p-6 pt-20 md:pt-24">
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-white rounded-lg shadow-md p-4 md:p-6">
+          <h1 className="text-xl md:text-2xl font-bold text-gray-800 mb-4 md:mb-6">Profile Management</h1>
+          
+          {/* Controls */}
+          <div className="bg-gray-50 p-3 md:p-4 rounded-lg mb-4 md:mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4">
+              {/* Language Selection */}
+              <div className="w-full sm:w-auto min-w-48">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Select Language</label>
+                <select
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
+                  onChange={(e) => setSelectedLang(e.target.value)}
+                  value={selectedLang}
+                >
+                  <option value="en">English</option>
+                  <option value="si">Sinhala</option>
+                  <option value="ta">Tamil</option>
+                </select>
+              </div>
 
-    <div className="flex flex-col space-y-2 p-4 sm:p-6">
-      
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-      {/* Language Selection */}
-        <div className="w-full sm:w-auto min-w-48">
-          <label className="block text-sm sm:text-base font-medium text-gray-700 mb-2">Select Language</label>
-          <select
-            className="w-full px-3 py-2 sm:py-3 border border-gray-300 rounded-md bg-white text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            onChange={(e) => setSelectedLang(e.target.value)}
-            value={selectedLang}
-          >
-            <option value="en">English</option>
-            <option value="si">Sinhala</option>
-            <option value="ta">Tamil</option>
-          </select>
+              <Link to="/profiles/add" className="w-full sm:w-auto">
+                <button className="w-full sm:w-auto bg-blue-600 text-white px-3 md:px-4 py-2 rounded hover:bg-blue-700 text-sm font-medium transition-colors">
+                  + Add Profile
+                </button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Board of Directors Section */}
+          <div className="mb-6 md:mb-8">
+            <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-3 md:mb-4">Board of Directors</h2>
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-white border border-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-2 md:px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      ID
+                    </th>
+                    <th className="px-2 md:px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Name
+                    </th>
+                    <th className="px-2 md:px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Designation
+                    </th>
+                    <th className="px-2 md:px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                      Description
+                    </th>
+                    <th className="px-2 md:px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {bodData.length > 0 ? (
+                    bodData.map((profile, index) => (
+                      <tr key={index} className="hover:bg-gray-50">
+                        <td className="px-2 md:px-4 py-3 md:py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                          {profile.id}
+                        </td>
+                        <td className="px-2 md:px-4 py-3 md:py-4 text-sm text-gray-900">
+                          <div className="max-w-xs">
+                            {selectedLang === 'en' ? profile.name_en : selectedLang === 'si' ? profile.name_si : profile.name_ta}
+                          </div>
+                        </td>
+                        <td className="px-2 md:px-4 py-3 md:py-4 text-sm text-gray-900">
+                          <div className="max-w-xs">
+                            {selectedLang === 'en' ? profile.designation_en : selectedLang === 'si' ? profile.designation_si : profile.designation_ta}
+                          </div>
+                        </td>
+                        <td className="px-2 md:px-4 py-3 md:py-4 text-sm text-gray-900 hidden md:table-cell">
+                          <div className="max-w-md max-h-32 overflow-y-auto">
+                            {selectedLang === 'en' ? profile.description_en?.map((desc, i) => (
+                              <div key={i} className="mb-1">
+                                <span className="text-sm leading-relaxed">{desc}</span>
+                              </div>
+                            )) : selectedLang === 'si' ? profile.description_si?.map((desc, i) => (
+                              <div key={i} className="mb-1">
+                                <span className="text-sm leading-relaxed">{desc}</span>
+                              </div>
+                            )) : profile.description_ta?.map((desc, i) => (
+                              <div key={i} className="mb-1">
+                                <span className="text-sm leading-relaxed">{desc}</span>
+                              </div>
+                            )) || <span className="text-gray-400 text-sm">No description available</span>}
+                          </div>
+                        </td>
+                        <td className="px-2 md:px-4 py-3 md:py-4 whitespace-nowrap text-sm text-gray-900">
+                          <div className="flex items-center space-x-1 md:space-x-2">
+                            <button 
+                              className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 md:px-3 py-1 rounded text-xs font-medium transition-colors" 
+                              onClick={() => handleUpdateClick(profile)}
+                            >
+                              Edit
+                            </button>
+                            <button 
+                              className="bg-red-500 hover:bg-red-600 text-white p-1 rounded text-xs transition-colors"
+                              onClick={() => handleDeleteClick(profile.id, 'bod')}
+                            > 
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5" className="px-4 py-8 text-center text-gray-500">
+                        No data available
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Corporate Management Section */}
+          <div className="mb-6 md:mb-8">
+            <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-3 md:mb-4">Corporate Management</h2>
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-white border border-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-2 md:px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      ID
+                    </th>
+                    <th className="px-2 md:px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Name
+                    </th>
+                    <th className="px-2 md:px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Designation
+                    </th>
+                    <th className="px-2 md:px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                      Description
+                    </th>
+                    <th className="px-2 md:px-4 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {coopData.length > 0 ? (
+                    coopData.map((profile, index) => (
+                      <tr key={index} className="hover:bg-gray-50">
+                        <td className="px-2 md:px-4 py-3 md:py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                          {profile.id}
+                        </td>
+                        <td className="px-2 md:px-4 py-3 md:py-4 text-sm text-gray-900">
+                          <div className="max-w-xs">
+                            {selectedLang === 'en' ? profile.name_en : selectedLang === 'si' ? profile.name_si : profile.name_ta}
+                          </div>
+                        </td>
+                        <td className="px-2 md:px-4 py-3 md:py-4 text-sm text-gray-900">
+                          <div className="max-w-xs">
+                            {selectedLang === 'en' ? profile.designation_en : selectedLang === 'si' ? profile.designation_si : profile.designation_ta}
+                          </div>
+                        </td>
+                        <td className="px-2 md:px-4 py-3 md:py-4 text-sm text-gray-900 hidden md:table-cell">
+                          <div className="max-w-md max-h-32 overflow-y-auto">
+                            {selectedLang === 'en' ? profile.description_en?.map((desc, i) => (
+                              <div key={i} className="mb-1">
+                                <span className="text-sm leading-relaxed">{desc}</span>
+                              </div>
+                            )) : selectedLang === 'si' ? profile.description_si?.map((desc, i) => (
+                              <div key={i} className="mb-1">
+                                <span className="text-sm leading-relaxed">{desc}</span>
+                              </div>
+                            )) : profile.description_ta?.map((desc, i) => (
+                              <div key={i} className="mb-1">
+                                <span className="text-sm leading-relaxed">{desc}</span>
+                              </div>
+                            )) || <span className="text-gray-400 text-sm">No description available</span>}
+                          </div>
+                        </td>
+                        <td className="px-2 md:px-4 py-3 md:py-4 whitespace-nowrap text-sm text-gray-900">
+                          <div className="flex items-center space-x-1 md:space-x-2">
+                            <button 
+                              className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 md:px-3 py-1 rounded text-xs font-medium transition-colors" 
+                              onClick={() => handleUpdateClick(profile)}
+                            >
+                              Edit
+                            </button>
+                            <button 
+                              className="bg-red-500 hover:bg-red-600 text-white p-1 rounded text-xs transition-colors"
+                              onClick={() => handleDeleteClick(profile.id, 'coop')}
+                            > 
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5" className="px-4 py-8 text-center text-gray-500">
+                        No data available
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Update Profile Popup */}
+          {isPopupOpen && selectedItem && (
+            <UpdateProfile
+              isOpen={isPopupOpen}
+              onClose={() => setIsPopupOpen(false)}
+              id={selectedItem.id}
+              initialName={selectedLang === 'en' ? selectedItem.name_en : selectedLang === 'si' ? selectedItem.name_si : selectedItem.name_ta}
+              initialType={selectedItem.type || (bodData.some(item => item.id === selectedItem.id) ? 'bod' : 'coop')}
+              initialDesignation={selectedLang === 'en' ? selectedItem.designation_en : selectedLang === 'si' ? selectedItem.designation_si : selectedItem.designation_ta}
+              initialDescription={selectedLang === 'en' ? selectedItem.description_en : selectedLang === 'si' ? selectedItem.description_si : selectedItem.description_ta}
+              tokenUrl={tokenUrl}
+              lang={selectedLang}
+            />
+          )}
         </div>
-
-        <Link to="/profiles/add" className="w-full sm:w-auto">
-          <button className="w-full sm:w-auto bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-md hover:bg-blue-700 text-sm sm:text-base font-medium transition-colors">
-            + Add Profile
-          </button>
-        </Link>
-
-        </div>
-
-      <div className="">
-      <h1 className="text-blue-800 font-semibold text-xl">Board of Directors</h1>
-      <table className="w-full table-auto border">
-                    <thead className='bg-blue-200'>
-                        <tr className="">
-                            <th className="px-3 py-2 text-left min-w-24">Profile ID</th>
-                            <th className="px-3 py-2 text-left min-w-32">Name</th>
-                            <th className="px-3 py-2 text-left min-w-32">Designation</th>
-                            <th className="px-3 py-2 text-center">Description</th>
-                            <th className="px-3 py-2 text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {bodData.length > 0 ? (
-                          bodData.map( (profile, index) => (
-                            <tr className='h-full odd:bg-blue-50 even:bg-blue-100 col-span-6' key={index}>
-                              <th className="py-2 px-3 text-center">{profile.id}</th>
-                                <td className="py-2 px-3">
-                                  <div className="max-h-32 max-w-64 overflow-y-auto">
-                                    {selectedLang === 'en' ? profile.name_en : selectedLang === 'si' ? profile.name_si : profile.name_ta}
-                                    </div>
-
-                                </td>
-                                <td className="py-2 px-3">
-                                  <div className="max-h-32 max-w-64 overflow-y-auto">
-                                    {selectedLang === 'en' ? profile.designation_en : selectedLang === 'si' ? profile.designation_si : profile.designation_ta}
-                                    </div>
-                                </td>
-                                {/* ✅ Display JSON array properly */}
-                                <td className=" flex flex-row py-2 px-3">
-                                  <div className='flex flex-col gap-y-2 max-h-32 max-w-auto overflow-y-auto'>
-                                  {selectedLang === 'en' ? profile.description_en?.map((desc, i) => (
-                                    <div key={i} className="flex items-start">
-                                      <span className="text-sm leading-relaxed">{desc}</span>
-                                    </div>
-                                  )) : selectedLang === 'si' ? profile.description_si?.map((desc, i) => (
-                                    <div key={i} className="flex items-start">
-                                      <span className="text-sm leading-relaxed">{desc}</span>
-                                    </div>
-                                  )) : profile.description_ta?.map((desc, i) => (
-                                    <div key={i} className="flex items-start">
-                                      <span className="text-sm leading-relaxed">{desc}</span>
-                                    </div>
-                                  )) || <span className="text-gray-400 text-sm">No description available</span>}
-                                  </div>
-                                </td>
-                                <td className="px-3 py-2 text-center min-w-36">
-                                  <div className='flex flex-row justify-center items-center'>
-                                    <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded mr-2" 
-                                     onClick={() => handleUpdateClick(profile)}
-                                      >
-                                      Edit
-                                    </button>
-                                    <button className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
-                                      onClick={() => handleDeleteClick(profile.id, 'bod')}
-                                      > 
-                                      <Trash2/>
-                                    </button>
-                                  </div>
-                                </td>
-                            </tr>
-                            
-                            ))
-                          ) : (
-                            <tr>
-                                    <td colSpan="5" className="text-center border border-gray-300 px-4 py-2 text-gray-500">
-                                      No data available
-                                    </td>
-                                  </tr>
-                          )}
-                    </tbody>
-      </table>
       </div>
-
-      <div className="py-10">
-      <h1 className="text-blue-800 font-semibold text-xl">Corporate Management</h1>
-      <table className="w-full table-auto border">
-                    <thead className='bg-blue-200'>
-                        <tr className="">
-                            <th className="px-3 py-2 text-left min-w-24">Profile ID</th>
-                            <th className="px-3 py-2 text-left min-w-32">Name</th>
-                            <th className="px-3 py-2 text-left min-w-32">Designation</th>
-                            <th className="px-3 py-2 text-center">Description</th>
-                            <th className="px-3 py-2 text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {coopData.length > 0 ? (
-                          coopData.map( (profile, index) => (
-                            <tr className='h-full odd:bg-blue-50 even:bg-blue-100 col-span-6' key={index}>
-                              <th className="py-2 px-3 text-center">{profile.id}</th>
-                                <td className="py-2 px-3">
-                                  <div className="max-h-32 max-w-64 overflow-y-auto">
-                                    {selectedLang === 'en' ? profile.name_en : selectedLang === 'si' ? profile.name_si : profile.name_ta}
-                                    </div>
-
-                                </td>
-                                <td className="py-2 px-3">
-                                  <div className="max-h-32 max-w-64 overflow-y-auto">
-                                    {selectedLang === 'en' ? profile.designation_en : selectedLang === 'si' ? profile.designation_si : profile.designation_ta}
-                                    </div>
-                                </td>
-                                {/* ✅ Display JSON array properly */}
-                                <td className=" flex flex-row py-2 px-3">
-                                  <div className='flex flex-col gap-y-2 max-h-32 max-w-auto overflow-y-auto'>
-                                  {selectedLang === 'en' ? profile.description_en?.map((desc, i) => (
-                                    <div key={i} className="flex items-start">
-                                      <span className="text-sm leading-relaxed">{desc}</span>
-                                    </div>
-                                  )) : selectedLang === 'si' ? profile.description_si?.map((desc, i) => (
-                                    <div key={i} className="flex items-start">
-                                      <span className="text-sm leading-relaxed">{desc}</span>
-                                    </div>
-                                  )) : profile.description_ta?.map((desc, i) => (
-                                    <div key={i} className="flex items-start">
-                                      <span className="text-sm leading-relaxed">{desc}</span>
-                                    </div>
-                                  )) || <span className="text-gray-400 text-sm">No description available</span>}
-                                  </div>
-                                </td>
-                                <td className="px-3 py-2 text-center min-w-36">
-                                  <div className='flex flex-row justify-center items-center'>
-                                    <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded mr-2" 
-                                     onClick={() => handleUpdateClick(profile)}
-                                      >
-                                      Edit
-                                    </button>
-                                    <button className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
-                                      onClick={() => handleDeleteClick(profile.id, 'coop')}
-                                      > 
-                                      <Trash2/>
-                                    </button>
-                                  </div>
-                                </td>
-                            </tr>
-                            
-                            ))
-                          ) : (
-                            <tr>
-                                    <td colSpan="5" className="text-center border border-gray-300 px-4 py-2 text-gray-500">
-                                      No data available
-                                    </td>
-                                  </tr>
-                          )}
-                    </tbody>
-      </table>
-      </div>
-
-      {/* Render Popup only when isPopupOpen is true */}
-       {isPopupOpen && selectedItem && (
-         <UpdateProfile
-           isOpen={isPopupOpen}
-           onClose={() => setIsPopupOpen(false)}
-           id={selectedItem.id}
-           initialName={selectedLang === 'en' ? selectedItem.name_en : selectedLang === 'si' ? selectedItem.name_si : selectedItem.name_ta}
-           initialType={selectedItem.type || (bodData.some(item => item.id === selectedItem.id) ? 'bod' : 'coop')}
-           initialDesignation={selectedLang === 'en' ? selectedItem.designation_en : selectedLang === 'si' ? selectedItem.designation_si : selectedItem.designation_ta}
-           initialDescription={selectedLang === 'en' ? selectedItem.description_en : selectedLang === 'si' ? selectedItem.description_si : selectedItem.description_ta}
-           tokenUrl={tokenUrl}
-           lang={selectedLang}
-         />
-       )}
-
     </div>
   )
 }
