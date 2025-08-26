@@ -22,7 +22,9 @@ export const requireAuth = async (req, res, next) => {
       });
     }
     
+    // Set both userRole and userId for backward compatibility
     req.userRole = userRole;
+    req.userId = req.session.userId;
     next();
   } catch (error) {
     await authLogger.unauthorizedAccess(req, `Authentication check failed: ${error.message}`);

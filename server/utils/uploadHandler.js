@@ -49,12 +49,24 @@ export async function handleFileUpload(req, res, baseDirectory) {
     // Connect to DB
     db = await connectToDatabase();
 
-    const [userRows] = await db.query("SELECT username FROM users WHERE id = ?", [req.userId]);
-    if (userRows.length === 0) {
-      return res.status(404).json({ message: "User not found" });
+    // Get userId from session (set by authMiddleware)
+    const userId = req.session?.userId;
+    let uploadedBy = "System"; // Default fallback
+    
+    if (userId) {
+      try {
+        const [userRows] = await db.query("SELECT username FROM users WHERE id = ?", [userId]);
+        if (userRows.length > 0) {
+          uploadedBy = userRows[0].username;
+        } else {
+          console.warn("User not found in database, using default uploadedBy");
+        }
+      } catch (userError) {
+        console.warn("Error retrieving user info, using default uploadedBy:", userError.message);
+      }
+    } else {
+      console.warn("No userId in session, using default uploadedBy");
     }
-
-    const uploadedBy = userRows[0].username;
 
     const query = `
       INSERT INTO file_uploads 

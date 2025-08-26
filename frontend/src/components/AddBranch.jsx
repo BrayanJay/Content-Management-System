@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FaBuildingColumns } from "react-icons/fa6";
-import { IoArrowBack, IoArrowForward, IoCheckmarkCircle } from "react-icons/io5";
+import { Building2, MapPin, Upload, CheckCircle, ArrowLeft, ArrowRight, RotateCcw, X } from "lucide-react";
 import UploadCard from "./UploadCard";
 
 const AddBranch = () => {
@@ -177,156 +176,209 @@ const AddBranch = () => {
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2">Branch Information</h3>
+          <div className="space-y-8">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-white rounded-lg shadow-sm">
+                  <Building2 className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900">Branch Information</h3>
+                  <p className="text-sm text-gray-600">Enter the complete details for the new branch location</p>
+                </div>
+              </div>
             
-            {/* Region Selection */}
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">Region</label>
-              <select
-                value={regionId}
-                onChange={(e) => setRegionId(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
-                required
-              >
-                <option value="">Select Region</option>
-                {regionOptions.map((region) => (
-                  <option key={region.id} value={region.id}>
-                    {region.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Branch Names */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">Branch Name (English)</label>
-                <input
-                  type="text"
-                  value={branchNameEn}
-                  onChange={(e) => setBranchNameEn(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
-                  placeholder="Enter branch name in English"
+              {/* Region Selection */}
+              <div className="space-y-3 mb-6">
+                <label className="block text-sm font-medium text-gray-700">Region</label>
+                <select
+                  value={regionId}
+                  onChange={(e) => setRegionId(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 bg-white"
                   required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">Branch Name (Sinhala)</label>
-                <input
-                  type="text"
-                  value={branchNameSi}
-                  onChange={(e) => setBranchNameSi(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
-                  placeholder="සිංහල නම"
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">Branch Name (Tamil)</label>
-                <input
-                  type="text"
-                  value={branchNameTa}
-                  onChange={(e) => setBranchNameTa(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
-                  placeholder="தமிழ் பெயர்"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Addresses */}
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">Address (English)</label>
-                <textarea
-                  value={branchAddressEn}
-                  onChange={(e) => setBranchAddressEn(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
-                  placeholder="Enter complete address in English"
-                  rows="2"
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">Address (Sinhala)</label>
-                <textarea
-                  value={branchAddressSi}
-                  onChange={(e) => setBranchAddressSi(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
-                  placeholder="සිංහල ලිපිනය"
-                  rows="2"
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">Address (Tamil)</label>
-                <textarea
-                  value={branchAddressTa}
-                  onChange={(e) => setBranchAddressTa(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
-                  placeholder="தமிழ் முகவரி"
-                  rows="2"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Contact Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">Contact Number</label>
-                <input
-                  type="text"
-                  value={contactNumber}
-                  onChange={(e) => setContactNumber(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
-                  placeholder="0712345678"
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">Email</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
-                  placeholder="branch@aaf.lk"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Coordinates */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">Latitude</label>
-                <input
-                  type="text"
-                  value={coordinatesLatitude}
-                  onChange={(e) => setCoordinatesLatitude(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
-                  placeholder="6.1234567"
-                  required
-                />
+                >
+                  <option value="">Select Region</option>
+                  {regionOptions.map((region) => (
+                    <option key={region.id} value={region.id}>
+                      {region.name}
+                    </option>
+                  ))}
+                </select>
               </div>
 
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">Longitude</label>
-                <input
-                  type="text"
-                  value={coordinatesLongitude}
-                  onChange={(e) => setCoordinatesLongitude(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
-                  placeholder="80.1234567"
-                  required
-                />
+              {/* Branch Names */}
+              <div className="space-y-6">
+                <h4 className="font-medium text-gray-800 flex items-center gap-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  Branch Names
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="space-y-3">
+                    <label className="block text-sm font-medium text-gray-700">English</label>
+                    <input
+                      type="text"
+                      value={branchNameEn}
+                      onChange={(e) => setBranchNameEn(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                      placeholder="Enter branch name in English"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <label className="block text-sm font-medium text-gray-700">Sinhala</label>
+                    <input
+                      type="text"
+                      value={branchNameSi}
+                      onChange={(e) => setBranchNameSi(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                      placeholder="සිංහල නම"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <label className="block text-sm font-medium text-gray-700">Tamil</label>
+                    <input
+                      type="text"
+                      value={branchNameTa}
+                      onChange={(e) => setBranchNameTa(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                      placeholder="தமிழ் பெயர்"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Addresses */}
+              <div className="space-y-6">
+                <h4 className="font-medium text-gray-800 flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  Branch Addresses
+                </h4>
+                <div className="space-y-6">
+                  <div className="space-y-3">
+                    <label className="block text-sm font-medium text-gray-700">Address (English)</label>
+                    <textarea
+                      value={branchAddressEn}
+                      onChange={(e) => setBranchAddressEn(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 resize-none"
+                      placeholder="Enter complete address in English"
+                      rows="3"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <label className="block text-sm font-medium text-gray-700">Address (Sinhala)</label>
+                    <textarea
+                      value={branchAddressSi}
+                      onChange={(e) => setBranchAddressSi(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 resize-none"
+                      placeholder="සිංහල ලිපිනය"
+                      rows="3"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <label className="block text-sm font-medium text-gray-700">Address (Tamil)</label>
+                    <textarea
+                      value={branchAddressTa}
+                      onChange={(e) => setBranchAddressTa(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 resize-none"
+                      placeholder="தமிழ் முகவரி"
+                      rows="3"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Contact Information */}
+              <div className="space-y-6">
+                <h4 className="font-medium text-gray-800 flex items-center gap-2">
+                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                  Contact Information
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <label className="block text-sm font-medium text-gray-700">Contact Number</label>
+                    <input
+                      type="text"
+                      value={contactNumber}
+                      onChange={(e) => setContactNumber(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                      placeholder="0712345678"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <label className="block text-sm font-medium text-gray-700">Email</label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                      placeholder="branch@aaf.lk"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Coordinates */}
+              <div className="space-y-6">
+                <h4 className="font-medium text-gray-800 flex items-center gap-2">
+                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                  Location Coordinates
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-gray-500" />
+                      Latitude
+                    </label>
+                    <input
+                      type="text"
+                      value={coordinatesLatitude}
+                      onChange={(e) => setCoordinatesLatitude(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                      placeholder="6.1234567"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-gray-500" />
+                      Longitude
+                    </label>
+                    <input
+                      type="text"
+                      value={coordinatesLongitude}
+                      onChange={(e) => setCoordinatesLongitude(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                      placeholder="80.1234567"
+                      required
+                    />
+                  </div>
+                </div>
+                
+                {/* Coordinates Info */}
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <MapPin className="w-5 h-5 text-amber-600 mt-0.5" />
+                    <div>
+                      <h5 className="font-medium text-amber-900 mb-1">Location Guidelines</h5>
+                      <p className="text-sm text-amber-700">
+                        Use Google Maps to find precise coordinates. Right-click on the branch location and select &ldquo;What&rsquo;s here?&rdquo; to get exact latitude and longitude values.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -335,19 +387,49 @@ const AddBranch = () => {
       case 2:
         return (
           <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2">Branch Image</h3>
-            <UploadCard
-              label="Branch Image"
-              uploadUrl={`${import.meta.env.VITE_API_BASE_URL}/fileUpload/upload/image`}
-              acceptedTypes="image/png,image/webp"
-              maxSizeMB={1}
-              customFileName={`${branchNameEn.toLowerCase().replace(/\s+/g, '').replace(/_+/g, '')}.webp`}
-              customDirectory="media/branches"
-              onUploadSuccess={(data) => {
-                console.log("Uploaded!", data);
-                setImageUploaded(true);
-              }}
-            />
+            <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-white rounded-lg shadow-sm">
+                  <Upload className="w-5 h-5 text-purple-600" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900">Branch Image Upload</h3>
+                  <p className="text-sm text-gray-600">Upload a representative image for this branch location</p>
+                </div>
+              </div>
+              
+              <div className="max-w-2xl">
+                <UploadCard
+                  label="Branch Image"
+                  uploadUrl={`${import.meta.env.VITE_API_BASE_URL}/fileUpload/upload/image`}
+                  acceptedTypes="image/png,image/webp"
+                  maxSizeMB={1}
+                  customFileName={`${branchNameEn.toLowerCase().replace(/\s+/g, '').replace(/_+/g, '')}.webp`}
+                  customDirectory="media/branches"
+                  onUploadSuccess={(data) => {
+                    console.log("Uploaded!", data);
+                    setImageUploaded(true);
+                  }}
+                />
+              </div>
+              
+              {/* Guidelines */}
+              <div className="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-4">
+                <div className="flex items-start gap-3">
+                  <Upload className="w-5 h-5 text-blue-600 mt-0.5" />
+                  <div>
+                    <h4 className="font-medium text-blue-900 mb-1">Image Guidelines</h4>
+                    <ul className="text-sm text-blue-700 space-y-1">
+                      <li>• Recommended resolution: 1200x800 pixels or 3:2 aspect ratio</li>
+                      <li>• Supported formats: PNG or WebP</li>
+                      <li>• Maximum file size: 1MB</li>
+                      <li>• Use clear, professional photos of the branch exterior or interior</li>
+                      <li>• Avoid blurry or low-quality images</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         );
 
@@ -409,38 +491,58 @@ const AddBranch = () => {
   };
 
   return (
-    <div className="p-4 md:p-6 pt-20 md:pt-24">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 pt-20 pb-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Page Header */}
+        <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <FaBuildingColumns className="text-blue-600 text-2xl" />
-            <h1 className="text-2xl font-bold text-gray-800">Add New Branch</h1>
+            <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
+              <Building2 className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Add New Branch</h1>
+              <p className="text-gray-600">Create a new branch location with details and media</p>
+            </div>
           </div>
-          
-          {/* Progress Indicator */}
-          <div className="flex items-center justify-between mb-6">
-            {[1, 2, 3].map((step) => (
-              <div key={step} className="flex items-center">
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
-                    currentStep >= step
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-200 text-gray-600"
-                  }`}
-                >
-                  {currentStep > step ? <IoCheckmarkCircle className="text-white" /> : step}
+          <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+        </div>
+
+        {/* Progress Indicator */}
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 mb-8">
+          <div className="flex items-center justify-between">
+            {[
+              { step: 1, title: "Branch Details", icon: Building2, description: "Basic information" },
+              { step: 2, title: "Branch Image", icon: Upload, description: "Upload media" },
+              { step: 3, title: "Review & Confirm", icon: CheckCircle, description: "Final review" }
+            ].map(({ step, title, icon: Icon, description }, index) => (
+              <div key={step} className="flex items-center flex-1">
+                <div className="flex flex-col items-center">
+                  <div
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center text-sm font-medium transition-all duration-300 ${
+                      currentStep >= step
+                        ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg"
+                        : "bg-gray-100 text-gray-400"
+                    }`}
+                  >
+                    {currentStep > step ? (
+                      <CheckCircle className="w-6 h-6" />
+                    ) : (
+                      <Icon className="w-6 h-6" />
+                    )}
+                  </div>
+                  <div className="mt-3 text-center">
+                    <div className={`font-medium text-sm ${
+                      currentStep >= step ? "text-blue-600" : "text-gray-500"
+                    }`}>
+                      {title}
+                    </div>
+                    <div className="text-xs text-gray-400 mt-1">{description}</div>
+                  </div>
                 </div>
-                <span className={`ml-2 text-sm font-medium ${
-                  currentStep >= step ? "text-blue-600" : "text-gray-500"
-                }`}>
-                  {step === 1 && "Details"}
-                  {step === 2 && "Upload"}
-                  {step === 3 && "Confirm"}
-                </span>
-                {step < 3 && (
-                  <div className={`w-16 h-0.5 ml-4 ${
-                    currentStep > step ? "bg-blue-600" : "bg-gray-200"
+                {index < 2 && (
+                  <div className={`flex-1 h-0.5 mx-4 transition-colors duration-300 ${
+                    currentStep > step ? "bg-gradient-to-r from-blue-500 to-blue-600" : "bg-gray-200"
                   }`} />
                 )}
               </div>
@@ -449,14 +551,17 @@ const AddBranch = () => {
         </div>
 
         {/* Main Form */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md">
-              <p className="text-red-700 text-sm">{error}</p>
+            <div className="bg-red-50 border-l-4 border-red-400 p-4 m-6 rounded-lg">
+              <div className="flex items-center">
+                <X className="w-5 h-5 text-red-400 mr-3" />
+                <p className="text-red-700 text-sm">{error}</p>
+              </div>
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="p-6">
             {renderStepContent()}
 
             {/* Navigation Buttons */}
@@ -466,9 +571,9 @@ const AddBranch = () => {
                   <button
                     type="button"
                     onClick={handleBack}
-                    className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                    className="flex items-center gap-2 px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 font-medium"
                   >
-                    <IoArrowBack />
+                    <ArrowLeft className="w-4 h-4" />
                     Back
                   </button>
                 )}
@@ -476,8 +581,9 @@ const AddBranch = () => {
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                  className="flex items-center gap-2 px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 font-medium"
                 >
+                  <RotateCcw className="w-4 h-4" />
                   Reset
                 </button>
               </div>
@@ -486,26 +592,32 @@ const AddBranch = () => {
                 <button
                   type="button"
                   onClick={() => navigate("/branch-network")}
-                  className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                  className="px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 font-medium"
                 >
                   Cancel
                 </button>
                 
                 <button
                   type="submit"
-                  className={`flex items-center gap-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                  className={`flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 font-medium shadow-lg ${
                     loading ? "opacity-50 cursor-not-allowed" : ""
                   }`}
                   disabled={loading}
                 >
                   {loading ? (
-                    "Adding..."
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Adding...
+                    </>
                   ) : currentStep === 3 ? (
-                    "Add Branch"
+                    <>
+                      <CheckCircle className="w-4 h-4" />
+                      Add Branch
+                    </>
                   ) : (
                     <>
                       Next
-                      <IoArrowForward />
+                      <ArrowRight className="w-4 h-4" />
                     </>
                   )}
                 </button>
