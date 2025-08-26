@@ -5,7 +5,7 @@ import FileTable from "../components/FileTable";
 
 
 const Documents = () => {
-    const tokenUrl = `${import.meta.env.VITE_API_BASE_URL }/auth/documents`;
+    const tokenUrl = `${import.meta.env.VITE_API_BASE_URL}/auth/documents`;
     const navigate = useNavigate();
 
   useEffect(() => {

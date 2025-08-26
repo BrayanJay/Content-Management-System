@@ -1,4 +1,4 @@
-🖥️ Asia Asset Finance – Custom CMS
+# 🖥️ Asia Asset Finance – Custom CMS
 
 This repository contains the Custom Content Management System (CMS) developed for the Asia Asset Finance PLC corporate website revamp.
 
@@ -6,27 +6,63 @@ The CMS was built to give administrators an easy, secure, and scalable platform 
 
 This project showcases my ability to design and develop a full-stack web application with Node.js, Express, MySQL, and React, including role-based access control (RBAC) and logging for monitoring and debugging.
 
-✨ Features
+## 🚀 Quick Start
 
-🔑 Authentication & Security – JWT-based login system with session handling.
+### Database Setup
+```bash
+# 1. Create database
+mysql -u root -p -e "CREATE DATABASE aaf_cms_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 
-🛡️ Role-Based Access Control (RBAC) – Different user roles with specific permissions:
+# 2. Run migration
+mysql -u root -p aaf_cms_db < database/migrations/001_initial_schema.sql
 
-Admin → Full access (manage users, media, content, branches).
+# 3. Configure environment
+cp .env.example .env
+# Edit .env with your database credentials
+```
 
-Editor → Can update content and media but cannot manage users.
+### Installation
+```bash
+# Install dependencies
+npm install
 
-Viewer → Read-only access.
+# Start development
+npm run dev        # Frontend (Vite)
+npm start          # Backend (Node.js)
+```
 
-🌍 Multilingual Content Management – Manage content in English, Sinhala, and Tamil.
+### Default Login
+- **Username**: `admin`
+- **Password**: `admin123` ⚠️ *Change immediately after first login!*
 
-🖼️ Media Uploads & File Handling – Upload, replace, and manage media with overwrite functionality (Multer).
+## 📊 Database Documentation
 
-👤 Profile Management – Update Board of Directors & Corporate Management profiles with images.
+- 📋 **[Complete Schema Documentation](./docs/DATABASE_SCHEMA.md)** - Detailed table structures, relationships, and indexes
+- 🗺️ **[Entity Relationship Diagram](./docs/DATABASE_ERD.md)** - Visual database schema with Mermaid diagrams
+- � **[Data Dictionary](./docs/DATABASE_DATA_DICTIONARY.md)** - Comprehensive field specifications and constraints
+- �🔧 **[Migration Scripts](./database/migrations/)** - Ready-to-run SQL setup scripts
+- 📖 **[Database Setup Guide](./database/README.md)** - Step-by-step installation instructions
+- 🔍 **[Database Analysis Tool](./database/analyze_database.sql)** - Query script for database health checks
 
-🏢 Branch Directory – Manage branches with names, addresses, contacts, and geo-coordinates.
+## ✨ Features
 
-📊 Database Integration – MySQL for structured and relational data storage.
+🔑 **Authentication & Security** – JWT-based login system with session handling.
+
+🛡️ **Role-Based Access Control (RBAC)** – Different user roles with specific permissions:
+- **Super Admin** → Full system access including user management
+- **Admin** → Full access (manage content, media, branches) except user management  
+- **Editor** → Can update content and media but cannot manage users
+- **Viewer** → Read-only access
+
+🌍 **Multilingual Content Management** – Manage content in English, Sinhala, and Tamil.
+
+🖼️ **Media Uploads & File Handling** – Upload, replace, and manage media with overwrite functionality (Multer).
+
+👤 **Profile Management** – Update Board of Directors & Corporate Management profiles with images.
+
+🏢 **Branch Directory** – Manage branches with names, addresses, contacts, and geo-coordinates.
+
+📊 **Database Integration** – MySQL for structured and relational data storage with comprehensive logging.
 
 📱 Responsive Admin UI – Built with React + Tailwind CSS.
 

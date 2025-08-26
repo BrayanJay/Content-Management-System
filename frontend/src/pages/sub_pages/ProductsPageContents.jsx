@@ -98,12 +98,6 @@ function ProductsPageContents() {
                 Select a product page to edit content, update information, or manage promotional materials
               </p>
             </div>
-            <div className="mt-4 md:mt-0">
-              <div className="inline-flex items-center px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-                CMS Online
-              </div>
-            </div>
           </div>
           <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
         </div>

@@ -126,7 +126,12 @@ function MortgagePageContents() {
           
           <div className="p-6">
             <FileTable 
-              table_name={table_name}
+              fileDirectory='products/mortgage/kfd' category="Key Fact Documents"
+            />
+          </div>
+          <div className="p-6">
+            <FileTable 
+              fileDirectory='products/mortgage/tariff' category="Charges and Tarrifs"
             />
           </div>
         </div>

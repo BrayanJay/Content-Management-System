@@ -58,7 +58,7 @@ function ForexPageContents() {
             <div>
               <h3 className="text-lg font-semibold text-gray-800 mb-4">Key Fact Documents</h3>
               <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                <FileTable fileDirectory="products/forex" category="Key Fact Documents"/>
+                <FileTable fileDirectory="products/forex/kfd" category="Key Fact Documents"/>
               </div>
             </div>
           </div>

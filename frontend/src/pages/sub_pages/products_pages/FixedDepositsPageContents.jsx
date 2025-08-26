@@ -127,7 +127,17 @@ function FixedDepositsPageContents() {
           
           <div className="p-6">
             <FileTable 
-              table_name={table_name}
+              fileDirectory='products/fixedDeposit/kfd' category="Key Fact Documents"
+            />
+          </div>
+          <div className="p-6">
+            <FileTable 
+              fileDirectory='products/fixedDeposit/rates' category="FD Rates"
+            />
+          </div>
+          <div className="p-6">
+            <FileTable 
+              fileDirectory='products/fixedDeposit/accounts' category="collection accounts"
             />
           </div>
         </div>
