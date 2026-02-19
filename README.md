@@ -9,23 +9,23 @@ This project showcases my ability to design and develop a full-stack web applica
 ## 📸 System Previews
 
 ### Secure Login Interface
-![Login Screen](/preview/login-dark.jpg)
+![Login Screen](preview/login-dark.jpg)
 
 ### Admin Dashboard Overview
-![Dashboard](/preview/main-dark.jpg)
+![Dashboard](preview/main-dark.jpg)
 
 ### Product Page Management
-![Products Module](/preview/products-dark.jpg)
+![Products Module](preview/products-dark.jpg)
 
 ### Detailed Content Editing (Gold Loan Example)
-![Content Editor](/preview/glPg-dark.jpg)
+![Content Editor](preview/glPg-dark.jpg)
 
 ### Branch Network Administration
-![Branch Management](/preview/branch_network-dark.png)
-![Add New Branch](/preview/new_branch-dark.jpg)
+![Branch Management](preview/branch_network-dark.png)
+![Add New Branch](preview/new_branch-dark.jpg)
 
 ### User & Role Management
-![User Management](/preview/user_management-dark.png)
+![User Management](preview/user_management-dark.png)
 
 ## 🚀 Quick Start
 
