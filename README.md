@@ -6,6 +6,27 @@ The CMS was built to give administrators an easy, secure, and scalable platform 
 
 This project showcases my ability to design and develop a full-stack web application with Node.js, Express, MySQL, and React, including role-based access control (RBAC) and logging for monitoring and debugging.
 
+## 📸 System Previews
+
+### Secure Login Interface
+![Login Screen](/preview/login-dark.jpg)
+
+### Admin Dashboard Overview
+![Dashboard](/preview/main-dark.jpg)
+
+### Product Page Management
+![Products Module](/preview/products-dark.jpg)
+
+### Detailed Content Editing (Gold Loan Example)
+![Content Editor](/preview/glPg-dark.jpg)
+
+### Branch Network Administration
+![Branch Management](/preview/branch_network-dark.png)
+![Add New Branch](/preview/new_branch-dark.jpg)
+
+### User & Role Management
+![User Management](/preview/user_management-dark.png)
+
 ## 🚀 Quick Start
 
 ### Database Setup
